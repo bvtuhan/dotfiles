@@ -1,0 +1,31 @@
+#+title:     Dotfiles Setup
+#+author:    bvtuhan
+#+email:     jjackson.stormm@gmail.com
+
+My =dotfiles= managed with =chezmoi=
+
+* Install =chezmoi=
+
+Via curl:
+#+begin_src bash
+sh -c "$(curl -fsLS get.chezmoi.io)"
+#+end_src
+
+Or via package manager:
+#+begin_src bash
+sudo pacman -S chezmoi
+#+end_src
+
+* Clone the repo
+
+#+begin_src bash
+chezmoi init https://github.com/bvtuhan/dotfiles.git
+chezmoi apply
+#+end_src
+
+* Pull the latest changes
+
+#+begin_src bash
+chezmoi update
+#+end_src
+
