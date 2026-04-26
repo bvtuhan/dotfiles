@@ -99,7 +99,7 @@
                ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
                ("\\paragraph{%s}" . "\\paragraph*{%s}")))
 
-;; theme
+;; theme: https://github.com/bvtuhan/yellowbeans-theme-emacs
 (setq doom-theme 'yellowbeans)
 
 ;; set default shell
