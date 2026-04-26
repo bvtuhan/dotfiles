@@ -1,0 +1,8 @@
+dot_config/doom/themes/
+dot_config/fish/fish_variables
+dot_config/nvim/tags
+dot_config/nvim/test.sh
+dot_config/nvim/.luarc.json
+dot_config/nvim/nvim
+dot_config/nvim/spell/
+dot_config/nvim/lazy-lock.json
