@@ -24,6 +24,8 @@
 #+LATEX_HEADER: \newcommand{\point}[1]{\noindent \textbf{#1}}
 #+LATEX_HEADER: \usepackage{hyperref}
 #+LATEX_HEADER: \usepackage{csquotes}
+#+LaTeX_HEADER: \usepackage{tikz}
+#+LaTeX_HEADER: \usetikzlibrary{shapes,arrows,automata,quotes}
 #+bibliography: references.bib
 #+cite_export: biblatex
 

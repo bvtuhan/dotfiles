@@ -48,7 +48,7 @@
 (setq org-directory "~/org/")
 (setq org-agenda-files '("~/org/agenda.org"))
 (setq org-latex-pdf-process
-      '("latexmk -lualatex='lualatex -interaction nonstopmode' -pdf -f %f"))
+      '("latexmk -pdflua -interaction=nonstopmode -shell-escape -bibtex %f"))
 (setq org-cite-export-processors
       '((latex biblatex)))
 (unless (boundp 'org-latex-classes)
@@ -57,11 +57,7 @@
 ;; cite cheat sheet:
 ;; [cite:@alan1938]         ; \autocite{alan1938}
 ;; [cite/text:@alan1938]    ; \textcite{alan1938}
-;; [cite/title:@alan1938]   ; \citetitle{alan1938}
 ;; [cite/author:@alan1938]  ; \citeauthor{alan1938}
-;; do not forget to add
-;; #+bibliography: references.bib
-;; #+cite_export: biblatex
 (add-to-list 'org-latex-classes
              '("article"
                "\\documentclass[11pt,a4paper]{article}
@@ -85,8 +81,6 @@
 \\usepackage{color}
 \\usepackage{enumerate}
 \\usepackage[inline]{enumitem}
-\\usepackage[backend=biber,style=authoryear]{biblatex}
-\\addbibresource{references.bib}
 \\definecolor{bg}{rgb}{0.95,0.95,0.95}
 \\tolerance=1000
       [NO-DEFAULT-PACKAGES]
