@@ -4,9 +4,11 @@
 # condition: t
 # --
 #+title:     ${1:Title}
-#+author:    ${2:Author}
-#+email:     ${3:email@example.com}
-#+description: ${4:Description}
+#+subtitle:  ${2:Subtitle}
+#+author:    ${3:Author}
+#+DATE:      {{{time(%Y-%m-%d)}}}
+#+email:     ${4:email@example.com}
+#+description: ${5:Description}
 #+LANGUAGE:  en
 #+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t ^:nil _:nil
 #+OPTIONS:   H:3 num:nil
