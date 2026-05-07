@@ -6,4 +6,5 @@ dot_config/nvim/.luarc.json
 dot_config/nvim/nvim
 dot_config/nvim/spell/
 dot_config/nvim/lazy-lock.json
+dot_config/doom/themes/
 README.org
