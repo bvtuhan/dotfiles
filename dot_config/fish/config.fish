@@ -11,5 +11,6 @@ fish_add_path ~/zls/zig-out/bin
 status --is-interactive; and pyenv init - | source
 
 alias sway-gpu='sway --unsupported-gpu'
+alias go-dot='cd ~/.local/share/chezmoi/'
 alias geforcenow='flatpak run com.nvidia.geforcenow'
 functions -e wget
