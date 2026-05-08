@@ -61,7 +61,7 @@
        (rust +lsp +tree-sitter)
        (sh +powershell +fish +bash +lsp)
        (zig +lsp +tree-sitter)   
-       (common-lisp +lsp +tree-sitter)
+       (common-lisp)
 
        :email
        ;;(mu4e +org +gmail)
