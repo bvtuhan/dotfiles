@@ -8,6 +8,8 @@ fish_add_path ~/.cargo/bin
 fish_add_path ~/.config/emacs/bin
 fish_add_path ~/zls/zig-out/bin
 
+set -gx nvm_default_version 25
+
 status --is-interactive; and pyenv init - | source
 
 alias sway-gpu='sway --unsupported-gpu'
