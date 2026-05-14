@@ -52,12 +52,14 @@ Multiple hooks:
 Creates keybindings.
 
 ```elisp
+;; bindings are always available (globally)
 :bind ("C-c g" . magit-status)
 ```
 
 Or within keymaps:
 
 ```elisp
+;; bindings are available only when the package is loaded
 :bind (:map org-mode-map
             ("C-c c" . org-capture))
 ```
@@ -167,6 +169,9 @@ So this `use-package` configuration:
   :custom
   (rustic-lsp-client 'eglot)
   :bind
+  ;; we use rustic-mode-map and :map so that
+  ;; bindings are enabled only when the
+  ;; rustic modes are enabled
   (:map rustic-mode-map
         ("C-c C-c" . rustic-compile))
   :config
@@ -194,6 +199,7 @@ Can be written in `with-eval-after-load`:
   ;; :hook (rustic-mode . eglot-ensure)
   (add-hook 'rustic-mode-hook #'eglot-ensure)
 
+  ;; mode-specific bindings as we use rustic-mode-map
   ;; :bind (:map rustic-mode-map ("C-c C-c" . rustic-compile))
   (define-key rustic-mode-map (kbd "C-c C-c") #'rustic-compile)
 
@@ -249,6 +255,8 @@ can be converted in vanilla version like this:
   :bind
   ("C-M-v" . org-download-clipboard))  ;; like map!
 ```
+Note that  `("C-M-v" . org-download-clipboard))` binds this globally as we did not use
+`org-download-mode-map` (it actually does not exist).
 
 Or you can use `require` / `with-eval-after-load`
 

@@ -1,0 +1,62 @@
+;;; init-eglot.el --- Custom eglot setup -*- lexical-binding: t -*-
+
+(use-package eglot
+  :ensure nil
+  :init
+  (setq completion-category-overrides '((eglot (styles orderless))
+                                        (eglot-capf (styles orderless))))
+  :commands
+  (eglot
+   eglot-ensure
+   eglot-shutdown
+   eglot-reconnect
+   eglot-code-actions
+   eglot-rename
+   eglot-format
+   eglot-format-buffer)
+
+  :custom
+  (eglot-autoshutdown nil)
+  (eglot-confirm-server-edits '((eglot-rename . nil)
+                                (t . diff)))
+  :config
+  ;; custom settings for lsp
+  (setq eglot-workspace-configuration
+        '(:rust-analyzer
+          (:completion (:autoimport (:enable t))
+           :inlayHints (:enable t)
+           :cargo (:checkOnSave t))))
+
+  (add-hook 'eglot-managed-mode-hook
+            (lambda ()
+              (setq eldoc-documentation-strategy #'eldoc-documentation-compose)
+              (eglot-inlay-hints-mode 1)
+              (add-hook 'before-save-hook #'eglot-format-buffer nil t)))
+  (setq eldoc-echo-area-use-multiline-p nil)
+
+  (my/leader-keys
+    "c"   '(:ignore t :which-key "code")
+
+    "c a" '(eglot-code-actions :which-key "LSP execute code action")
+    "c r" '(eglot-rename :which-key "LSP rename")
+    "c f" '(eglot-format :which-key "Format buffer/region")
+
+    "c d" '(xref-find-definitions :which-key "Jump to definition")
+    "c D" '(xref-find-references :which-key "Jump to references")
+    "c i" '(eglot-find-implementation :which-key "Find implementations")
+    "c k" '(eldoc-doc-buffer :which-key "Jump to documentation")
+
+    "c c" '(compile :which-key "Compile")
+    "c C" '(recompile :which-key "Recompile")
+    "c w" '(delete-trailing-whitespace :which-key "Delete trailing whitespace")
+    "c x" '(flycheck-list-errors :which-key "List errors"))
+
+  :bind
+  (:map eglot-mode-map
+        ("gr" . xref-find-references)
+        ("gd" . xref-find-definitions)
+        ("gi" . eglot-find-implementation)
+        ("K"  . eldoc-doc-buffer)))
+
+
+(provide 'init-eglot)

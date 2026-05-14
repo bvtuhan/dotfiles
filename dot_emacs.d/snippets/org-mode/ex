@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: example block
+# key: ex
+# --
+#+BEGIN_EX
+$1
+#+END_EX
