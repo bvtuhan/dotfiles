@@ -1,0 +1,55 @@
+;;; init-misc.el --- Random stuff -*- lexical-binding: t; -*-
+
+;;; Commentary:
+
+;;; Code:
+
+(use-package copilot
+  :bind (:map copilot-completion-map
+              ("<tab>"   . copilot-accept-completion)
+              ("TAB"     . copilot-accept-completion)
+              ("C-TAB"   . copilot-accept-completion-by-word)
+              ("C-<tab>" . copilot-accept-completion-by-word))
+  :config
+  (defun copilot--infer-indentation-offset ()
+    (or (bound-and-true-p tab-width) 4)))
+
+(use-package autoinsert
+  :ensure nil
+  :init
+  (auto-insert-mode 1)
+  :config
+  (setq auto-insert-query nil)
+  (defun my/title-from-file-name (file-name)
+    (string-join
+     (mapcar #'capitalize
+             (split-string
+              (file-name-sans-extension file-name)
+              "[-_]+" t))
+     " "))
+  (define-auto-insert
+    "\\.org\\'"
+    (lambda ()
+      (let* ((file-name (file-name-nondirectory buffer-file-name))
+             (title (my/title-from-file-name file-name)))
+        (insert
+         "#+title: " title "\n"
+         "#+author:    bvtuhan\n"
+         "#+email:     jjackson.stormm@gmail.com\n"))))
+
+  (define-auto-insert
+    "\\.el\\'"
+    (lambda ()
+      (let* ((file-name (file-name-nondirectory buffer-file-name))
+             (feature-name (file-name-sans-extension file-name)))
+        (insert
+         ";;; " file-name " --- Description -*- lexical-binding: t; -*-\n\n"
+         ";;; Commentary:\n\n"
+         ";;; Code:\n\n"
+         "\n"
+         "(provide '" feature-name ")\n"
+         ";;; " file-name " ends here\n")))))
+
+
+(provide 'init-misc)
+;;; init-misc.el ends here
