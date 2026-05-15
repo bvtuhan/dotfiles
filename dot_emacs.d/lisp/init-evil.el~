@@ -5,7 +5,7 @@
 
 ;; evil mode
 (use-package evil
-  :init 
+  :init
   (setq evil-search-module 'evil-search
         evil-ex-complete-emacs-commands nil
         evil-vsplit-window-right t
@@ -52,4 +52,3 @@
 
 (provide 'init-evil)
 ;;; init-evil.el ends here
-

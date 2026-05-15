@@ -1,8 +1,5 @@
 ;;; init-evil.el --- Custom evil setup -*- lexical-binding: t -*-
 
-;; PLEASE DO NOT DEFINE CUSTOM KEYBINDINGS FOR EVIL
-;; MODE INSIDE THIS FILE. GOTO init-general.el
-
 ;; evil mode
 (use-package evil
   :init

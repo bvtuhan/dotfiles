@@ -2,9 +2,6 @@
 
 (use-package eglot
   :ensure nil
-  :init
-  (setq completion-category-overrides '((eglot (styles orderless))
-                                        (eglot-capf (styles orderless))))
   :commands
   (eglot
    eglot-ensure
@@ -20,19 +17,24 @@
   (eglot-confirm-server-edits '((eglot-rename . nil)
                                 (t . diff)))
   :config
+
+  ;; lsp binaries
+  (add-to-list 'eglot-server-programs
+               '((zig-mode zig-ts-mode) . ("zls")))
+
   ;; custom settings for lsp
   (setq eglot-workspace-configuration
         '(:rust-analyzer
           (:completion (:autoimport (:enable t))
-           :inlayHints (:enable t)
-           :cargo (:checkOnSave t))))
+                       :inlayHints (:enable t)
+                       :cargo (:checkOnSave t))))
 
   (add-hook 'eglot-managed-mode-hook
             (lambda ()
-              (setq eldoc-documentation-strategy #'eldoc-documentation-compose)
+              (setq-local eldoc-documentation-strategy
+                          #'eldoc-documentation-compose)
               (eglot-inlay-hints-mode 1)
               (add-hook 'before-save-hook #'eglot-format-buffer nil t)))
-  (setq eldoc-echo-area-use-multiline-p nil)
 
   (my/leader-keys
     "c"   '(:ignore t :which-key "code")
@@ -57,6 +59,5 @@
         ("gd" . xref-find-definitions)
         ("gi" . eglot-find-implementation)
         ("K"  . eldoc-doc-buffer)))
-
 
 (provide 'init-eglot)

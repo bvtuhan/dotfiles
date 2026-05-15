@@ -22,3 +22,4 @@
   (flycheck-mode . flycheck-posframe-mode))
 
 (provide 'init-flycheck)
+;;; init-flycheck.el ends here

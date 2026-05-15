@@ -4,6 +4,26 @@
 ;; LOCAL BINDINGS MAY OVERWRITE THESE
 ;; SO BE CAREFUL
 
+;; Notes for custom bindings
+;;
+;; 1.For plugin-specific mappings, use this:
+;;   (general-define-key
+;;   :states 'normal <WHICH EVIL_MODE>
+;;   :keymaps 'x-mode-map <X is the plugin>
+;;   "z=" #'x-func))
+;;   But the common-practice is to define the
+;;   package-local keybindings inside use-package
+;;   function. The main problem is that if we bind
+;;   'x-func' here, the package for x must have been
+;;   loaded at that point. If it is not the case, then
+;;   the general would crash. So use this instead:
+;;   (use-package x
+;;     :bind ;; normal-emacs binding for fallback
+;;     (("M-$" . x-func))
+;;     :config
+;;     (with-eval-after-load 'evil
+;;       (evil-global-set-key 'normal (kbd "z=") #'x-func)))
+
 (use-package which-key
   :init (which-key-mode)
   :config
@@ -24,8 +44,8 @@
     "K"  #'eldoc-doc-buffer)
 
   (general-define-key
-    "M-m" 'shell-command
-    "C-/" 'comment-dwim
+   "M-m" 'shell-command
+   "C-/" 'comment-dwim
    )
 
   ;; doom migration
@@ -77,20 +97,20 @@
     "qq" '(save-buffers-kill-terminal :which-key "Quit Emacs"))
 
   (general-define-key
-    :states 'motion
-    "?" '+consult-line
+   :states 'motion
+   "?" '+consult-line
 
-    ;; window management
-    "C-w C-u" 'tab-bar-history-back
-    "C-w u" 'tab-bar-history-back
+   ;; window management
+   "C-w C-u" 'tab-bar-history-back
+   "C-w u" 'tab-bar-history-back
 
-    "C-w a" 'ace-window
-    "C-w C-w" 'ace-window
-    "C-w w" 'ace-window
+   "C-w a" 'ace-window
+   "C-w C-w" 'ace-window
+   "C-w w" 'ace-window
 
-    "C-w d" 'evil-window-delete
-    "C-w C-l" 'evil-window-right
-    "C-w C-h" 'evil-window-left)
+   "C-w d" 'evil-window-delete
+   "C-w C-l" 'evil-window-right
+   "C-w C-h" 'evil-window-left)
 
   (general-unbind '(motion insert) "C-z")
   )

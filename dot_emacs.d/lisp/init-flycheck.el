@@ -21,5 +21,11 @@
   :hook
   (flycheck-mode . flycheck-posframe-mode))
 
+(use-package flycheck-eglot
+  :ensure t
+  :after (flycheck eglot)
+  :config
+  (global-flycheck-eglot-mode 1))
+
 (provide 'init-flycheck)
 ;;; init-flycheck.el ends here

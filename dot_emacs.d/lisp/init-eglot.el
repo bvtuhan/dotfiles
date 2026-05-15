@@ -1,5 +1,13 @@
 ;;; init-eglot.el --- Custom eglot setup -*- lexical-binding: t -*-
 
+;; Notes for eglot
+;; 1. For custom languages that eglot does not have out-of-box
+;;    support, you have to edit :config in 'init-eglot.el':
+;;      (add-to-list 'eglot-server-programs
+;;                   '((zig-mode zig-ts-mode) . ("zls"))))
+;;    Note that you have to create separate 'add-to-list' for
+;;    each individual binary.
+
 (use-package eglot
   :ensure nil
   :commands
@@ -17,12 +25,17 @@
   (eglot-confirm-server-edits '((eglot-rename . nil)
                                 (t . diff)))
   :config
+
+  ;; lsp binaries
+  (add-to-list 'eglot-server-programs
+               '((zig-mode zig-ts-mode) . ("zls")))
+
   ;; custom settings for lsp
   (setq eglot-workspace-configuration
         '(:rust-analyzer
           (:completion (:autoimport (:enable t))
-           :inlayHints (:enable t)
-           :cargo (:checkOnSave t))))
+                       :inlayHints (:enable t)
+                       :cargo (:checkOnSave t))))
 
   (add-hook 'eglot-managed-mode-hook
             (lambda ()

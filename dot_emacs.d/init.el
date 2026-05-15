@@ -40,7 +40,7 @@
 (setq ring-bell-function 'ignore)
 (setq-default indent-tabs-mode nil
               tab-width 4
-              c-basic-offset 4
+              c-basic-offset 4 ;; reset in init-langs.el
               c-default-style "linux"
               fill-column 70
               word-wrap t
@@ -76,12 +76,6 @@
 
 (use-package ace-window)
 
-(setq ispell-dictionary "english"
-      ispell-extra-args '("--sug-mode=ultra" "--lang=en_US" "--run-together"))
-(cond ((eq system-type 'darwin) (setq ispell-program-name "/opt/homebrew/bin/aspell"))
-      ((eq system-type 'windows-nt) (setq ispell-program-name "C:/msys64/mingw64/bin/aspell.exe"))
-      ((eq system-type 'gnu/linux) (setq ispell-program-name "/usr/bin/aspell")))
-
 ;; formatter
 (add-hook 'before-save-hook #'delete-trailing-whitespace)
 (use-package apheleia
@@ -90,6 +84,23 @@
   (setf (alist-get 'clang-format apheleia-formatters)
         '("clang-format" "--style={BasedOnStyle: LLVM, IndentWidth: 4, TabWidth: 4, UseTab: Never}"))
   (apheleia-global-mode +1))
+
+;; spell checker
+;; sudo pacman -S enchant hunspell hunspell-en_us
+(use-package jinx
+  :ensure t
+  :hook
+  ((prog-mode . jinx-mode)
+   (org-mode . jinx-mode)
+   (latex-mode . jinx-mode)
+   (LaTeX-mode . jinx-mode)
+   (markdown-mode . jinx-mode)
+   (gfm-mode . jinx-mode))
+  :bind
+  (("M-$" . jinx-correct))
+  :config
+  (with-eval-after-load 'evil
+    (evil-global-set-key 'normal (kbd "z=") #'jinx-correct)))
 
 (require 'init-org)
 (require 'init-dired)

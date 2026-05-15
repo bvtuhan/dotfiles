@@ -1,5 +1,18 @@
 ;;; init-langs.el --- Custom language setup -*- lexical-binding: t -*-
 
+;; Notes for language specific configurations:
+;; 1. ':hook (X-mode . eglot-ensure)' or `(x-ts-mode . eglot-ensure)'
+;;    autostarts the lsp in buffer. Avoid it.
+;; 2. For custom languages that eglot does not have out-of-box
+;;    support, you have to edit :config in 'init-eglot.el':
+;;      (add-to-list 'eglot-server-programs
+;;                   '((zig-mode zig-ts-mode) . ("zls"))))
+;; 3. To be able to replace your custom buffer-mode (eg. external
+;;    zig tree sitter, you have to replace the default buffer mode
+;;    that emacs utilizes:
+;;    (use-package zig-ts-mode
+;;     :config (add-to-list 'auto-mode-alist '("\\.zig\\'" . zig-ts-mode)))
+
 (use-package treesit
   :ensure nil
   :when (treesit-available-p)
@@ -13,6 +26,7 @@
   (setq treesit-language-source-alist
         '((bash       "https://github.com/tree-sitter/tree-sitter-bash")
           (c          "https://github.com/tree-sitter/tree-sitter-c")
+          (zig        "https://github.com/tree-sitter-grammars/tree-sitter-zig" "master" "src")
           (cpp        "https://github.com/tree-sitter/tree-sitter-cpp")
           (css        "https://github.com/tree-sitter/tree-sitter-css")
           (go         "https://github.com/tree-sitter/tree-sitter-go")
@@ -44,8 +58,19 @@
   :ensure t
   :mode ("README\\.md\\'" . gfm-mode)
   :init (setq markdown-command "multimarkdown")
+  :hook ((markdown-mode . (lambda ()
+                            (setq-local indent-tabs-mode nil)
+                            (setq-local fill-column 80)
+                            (setq-local comment-fill-column 80))))
   :bind (:map markdown-mode-map
               ("C-c C-e" . markdown-do)))
+
+
+;; Hook example
+;; :hook ((prog-mode . hl-todo-mode)
+;;        (markdown-mode . hl-todo-mode)
+;;        (org-mode . hl-todo-mode)
+;;        (some-mode-hook . hl-todo-mode))
 
 (use-package rust-mode
   :ensure t
@@ -85,6 +110,12 @@
   (my/leader-keys
     :keymaps 'emacs-lisp-mode-map
     "c e" '(elisp-eval-region-or-buffer)))
+
+(use-package zig-ts-mode
+  :vc (:url "https://codeberg.org/meow_king/zig-ts-mode"
+            :rev :newest)
+  :config
+  (add-to-list 'auto-mode-alist '("\\.zig\\'" . zig-ts-mode)))
 
 (with-eval-after-load 'python-ts-moded
   (setq python-indent-offset 4))
