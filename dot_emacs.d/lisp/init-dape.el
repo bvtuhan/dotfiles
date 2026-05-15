@@ -1,5 +1,6 @@
 ;;; init-dape.el --- Custom dape setup -*- lexical-binding: t -*-
 
+;; keybindings are defined in `init-general.el'
 (use-package dape
   :ensure t
   :commands (dape)

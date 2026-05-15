@@ -1,12 +1,31 @@
 ;;; init-completion.el --- Custom completion setup -*- lexical-binding: t -*-
 
+;; Notes
+;; We are using Corfu + Cape + CAPF (all my homies hate `company')
+;; Main completion hook is:
+;; `(add-hook 'completion-at-point-functions #'X-complete-at-point DEPTH(t/nil) LOCAL(t/nil))'
+;; Some languages like common-lisp and clojure provide at-point completion without
+;; any lsp requirement. You can directly hook `completion-at-point-functions' within
+;; the corresponding package. For instance (see `init-langs.el'):
+;; (use-package cider
+;;   :ensure t
+;;   :after clojure-ts-mode
+;;   :hook ((clojure-ts-mode . cider-mode)
+;;          (cider-mode . eldoc-mode)
+;;          (cider-mode . (lambda ()
+;;                          (add-hook 'completion-at-point-functions
+;;                                    #'cider-complete-at-point
+;;                                    nil
+;;                                    t)))
+;;          (cider-repl-mode . eldoc-mode))
+
 (use-package electric
   :ensure nil
   :init
   (electric-pair-mode 1)
-  ; :hook
-  ; (org-mode . (lambda ()
-  ;               (electric-pair-local-mode -1)))
+  ;; :hook
+  ;; (org-mode . (lambda ()
+  ;;               (electric-pair-local-mode -1)))
   :custom
   (electric-pair-delete-adjacent-pairs t)
   (show-paren-delay 0)

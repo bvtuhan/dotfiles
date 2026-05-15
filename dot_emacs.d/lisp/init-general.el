@@ -45,8 +45,7 @@
 
   (general-define-key
    "M-m" 'shell-command
-   "C-/" 'comment-dwim
-   )
+   "C-/" 'comment-dwim)
 
   ;; doom migration
   (general-create-definer my/leader-keys
@@ -58,8 +57,49 @@
   (my/leader-keys
     "SPC" '(find-file :which-key "Find file")
     "."   '(find-file :which-key "Find file")
-    ","   '(switch-to-buffer :which-key "Switch buffer")
+    ","   '(consult-buffer :which-key "Switch buffer")
     ":"   '(execute-extended-command :which-key "M-x")
+    "/"   '(consult-ripgrep :which-key "Fuzzy search")
+
+    "s"   '(:ignore t :which-key "search")
+
+    "s s" '(consult-line :which-key "Search current buffer")
+    "s S" '(consult-line-multi :which-key "Search all buffers")
+    "s o" '(consult-outline :which-key "Search outline")
+    "s i" '(consult-imenu :which-key "Search imenu")
+    "s I" '(consult-imenu-multi :which-key "Search imenu all buffers")
+
+    "s p" '((lambda ()
+              (interactive)
+              (consult-ripgrep
+               (if-let ((project (project-current)))
+                   (project-root project)
+                 default-directory)))
+            :which-key "Search project")
+
+    "s d" '((lambda ()
+              (interactive)
+              (consult-ripgrep
+               (read-directory-name "Search directory: ")))
+            :which-key "Search directory"
+            )
+
+    "s g" '(consult-grep :which-key "Grep")
+    "s f" '(consult-find :which-key "Find file in directory")
+    "s F" '(consult-locate :which-key "Locate file")
+
+    "s r" '(consult-ripgrep :which-key "Ripgrep")
+    "s k" '(consult-keep-lines :which-key "Keep matching lines")
+    "s u" '(consult-focus-lines :which-key "Focus matching lines")
+
+    "s h" '(consult-history :which-key "Search minibuffer history")
+    "s m" '(consult-mark :which-key "Search marks")
+    "s M" '(consult-global-mark :which-key "Search global marks")
+    "s R" '(consult-register :which-key "Search registers")
+
+    "s c" '(consult-command :which-key "Search commands")
+    "s e" '(consult-isearch-history :which-key "Search isearch history")
+    "s y" '(consult-yank-pop :which-key "Search kill ring")
 
     "b" '(:ignore t :which-key "Buffer")
     "bb" '(consult-buffer :which-key "consult-buffer")
@@ -73,7 +113,25 @@
 
     "f" '(:ignore t :which-key "file")
     "ff" '(find-file :which-key "Find file")
-    "fs" '(save-buffer :which-key "Save file")
+    "fs" '(save-buffer :which-key "Save buffer")
+    "fS" '((lambda ()
+             (interactive)
+             (save-some-buffers t))
+           :which-key "Save all buffers")
+    "fp" '((lambda ()
+             (interactive)
+             (dired-x-find-file user-emacs-directory))
+           :which-key "Open private configuration in new window")
+    "fP" '((lambda ()
+             (interactive)
+             (dired-x-find-file-other-winow user-emacs-directory)
+             (find-file user-emacs-directory))
+           :which-key "Open private configuration")
+
+    "fn" '((lambda ()
+             (interactive)
+             (dired-x-find-file-other-window "~/notes/"))
+           :which-key "Locate private notes")
 
     "w" '(evil-window-map :which-key "window")
 
@@ -92,6 +150,24 @@
     "d R" '(dape-repl :which-key "REPL")
     "d x" '(dape-evaluate-expression :which-key "Evaluate")
     "d w" '(dape-watch-dwim :which-key "Watch")
+
+    "l"  '(:ignore t :wk "live share/collab")
+    "lb" '(crdt-switch-to-buffer :wk "switch to shared buffer")
+    "lc" '(crdt-connect :wk "connect to session")
+    "ld" '(crdt-disconnect :wk "disconnect")
+    "lf" '(crdt-follow-user :wk "follow user's cursor")
+    "lF" '(crdt-stop-follow :wk "stop following")
+    "lg" '(crdt-goto-user :wk "goto user's cursor")
+    "li" '(crdt-list-buffers :wk "list shared buffers")
+    "lk" '(crdt-kill-user :wk "kick user")
+    "ll" '(crdt-list-sessions :wk "list sessions")
+    "ls" '(crdt-share-buffer :wk "share current buffer")
+    "lS" '(crdt-stop-share-buffer :wk "stop sharing buffer")
+    "lu" '(crdt-list-users :wk "list users")
+    "lx" '(crdt-stop-session :wk "stop session")
+    "ly" '(crdt-copy-url :wk "copy session URL")
+    "l]" '(crdt-goto-next-user :wk "next user's cursor")
+    "l[" '(crdt-goto-prev-user :wk "previous user's cursor")
 
     "q" '(:ignore t :which-key "quit")
     "qq" '(save-buffers-kill-terminal :which-key "Quit Emacs"))

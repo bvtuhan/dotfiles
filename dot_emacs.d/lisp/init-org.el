@@ -9,7 +9,8 @@
   :hook ((org-mode . my/org-setup-auto-fill)
          (org-mode . hl-todo-mode)
          (org-mode . visual-line-mode)
-         (org-mode . flyspell-mode))
+         ;; (org-mode . flyspell-mode)
+         )
   :custom
   (org-directory "~/org/")
   (org-agenda-files '("~/org/"))
@@ -40,9 +41,6 @@
         org-confirm-babel-evaluate nil
         org-src-window-setup 'current-window
         org-startup-with-inline-images t)
-  (when (boundp '+org-google-dir)
-    (setq org-directory +org-google-dir
-          org-agenda-files (list (format "%s/roam/agenda" +org-google-dir))))
   (setq org-format-latex-options
         (plist-put org-format-latex-options :scale 1.5))
   (setq org-latex-listings 'minted
@@ -181,6 +179,20 @@
   :config
   (require 'evil-org-agenda)
   (evil-org-agenda-set-keys))
+
+
+(use-package org-download
+  :ensure t
+  :after org
+  :hook (org-mode . org-download-enable)
+  :bind (:map org-mode-map ("C-M-v" . org-download-clipboard))
+  :config
+  (setq-default org-download-image-dir "./images"))
+
+(use-package org-fragtog
+  :ensure t
+  :after org
+  :hook (org-mode . org-fragtog-mode))
 
 (provide 'init-org)
 ;;; init-org.el ends here

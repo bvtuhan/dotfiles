@@ -1,107 +1,95 @@
-;;; init-completion.el --- Custom completion setup-*- lexical-binding: t -*-
+;;; init-completion.el --- Custom completion setup -*- lexical-binding: t -*-
 
 (use-package electric
   :ensure nil
   :init
   (electric-pair-mode 1)
-  :hook
-  (org-mode . (lambda () (electric-pair-local-mode -1)))
+  ; :hook
+  ; (org-mode . (lambda ()
+  ;               (electric-pair-local-mode -1)))
   :custom
   (electric-pair-delete-adjacent-pairs t)
   (show-paren-delay 0)
-  (electric-pair-inhibit-predicate (lambda (char) (minibufferp))))
+  :config
+  (setq electric-pair-inhibit-predicate
+        (lambda (char)
+          (or (minibufferp)
+              (electric-pair-default-inhibit char)))))
 
 (use-package yasnippet
-  :config
+  :init
   (yas-global-mode 1))
 
 (use-package yasnippet-snippets
-  :after yasnippet
-  :config
-  (yas-reload-all))
+  :after yasnippet)
 
-;;; VERTICO
 (use-package vertico
   :init
-  (vertico-mode)
+  (vertico-mode 1)
   :general
   (:keymaps 'vertico-map
-    "C-j" 'vertico-next
-    "C-k" 'vertico-previous)
-  :config
-  (setq vertico-resize nil
-        vertico-count 17
-        vertico-cycle t))
-
-(use-package orderless
-  :init
-  (setq completion-styles '(orderless)
-        completion-category-defaults nil
-        completion-category-overrides '((file (styles partial-completion)))))
+            "C-j" #'vertico-next
+            "C-k" #'vertico-previous)
+  :custom
+  (vertico-resize nil)
+  (vertico-count 17)
+  (vertico-cycle t))
 
 (use-package savehist
   :init
-  (savehist-mode))
+  (savehist-mode 1))
 
 (use-package marginalia
-  :general
-  ("M-A" 'marginalia-cycle)
-  (:keymaps 'minibuffer-local-map
-    "M-A" 'marginalia-cycle)
   :init
-  (marginalia-mode))
+  (marginalia-mode 1)
+  :general
+  ("M-A" #'marginalia-cycle)
+  (:keymaps 'minibuffer-local-map
+            "M-A" #'marginalia-cycle))
 
-(use-package consult
-  :config
-  (setq completion-in-region-function
-        (lambda (&rest args)
-          (apply (if vertico-mode
-                     #'consult-completion-in-region
-                   #'completion--in-region)
-                 args))))
+(use-package consult)
 
-
-;; integration with flyspell
-(use-package consult-flyspell
-  :straight (consult-flyspell :type git :host gitlab :repo "OlMon/consult-flyspell" :branch "master")
-  :config
-  (setq consult-flyspell-select-function nil
-        consult-flyspell-set-point-after-word t
-        consult-flyspell-always-check-buffer nil))
-
-
-(defun +consult/find-file (DIR)
+(defun +consult/ripgrep (dir)
+  "Run `consult-ripgrep' in DIR."
   (interactive "DSelect dir: ")
-  (let ((selection (completing-read "Find file: " (split-string (shell-command-to-string (concat "find " DIR)) "\n" t))))
-    (find-file selection)))
+  (consult-ripgrep dir))
 
-(defun +consult/ripgrep (DIR)
-  (interactive "DSelect dir: ")
-  (consult-ripgrep DIR))
-
-(defun +consult/org-roam-ripgrep ()
+(defun +consult/org-ripgrep ()
+  "Run `consult-ripgrep' in `org-directory'."
   (interactive)
   (consult-ripgrep org-directory))
 
 (defun +consult-line ()
+  "Run `consult-line' and populate Evil search history."
   (interactive)
   (consult-line)
-  (let ((search-pattern (car consult--line-history)))
-    (setq evil-ex-search-pattern (evil-ex-make-search-pattern search-pattern))
+  (when-let ((search-pattern (car consult--line-history)))
+    (setq evil-ex-search-pattern
+          (evil-ex-make-search-pattern search-pattern))
     (evil-ex-search-activate-highlight evil-ex-search-pattern)))
 
-
-;; embark
 (use-package embark
-  :general
-  ("C-l" 'embark-act)
-  ("<mouse-3>" 'embark-act) ;; right click
-  (:keymaps 'evil-normal-state-map
-    "C-l" 'embark-act
-    "<mouse-3>" 'embark-act)
   :init
   (setq prefix-help-command #'embark-prefix-help-command
-        which-key-use-C-h-commands nil))
+        which-key-use-C-h-commands nil)
+  :general
+  ("C-l" #'embark-act)
+  ("<mouse-3>" #'embark-act)
+  (:keymaps 'evil-normal-state-map
+            "C-l" #'embark-act
+            "<mouse-3>" #'embark-act))
+
+(use-package embark-consult
+  :after (embark consult))
+
+(use-package orderless
+  :init
+  (setq completion-styles '(orderless basic)
+        completion-category-defaults nil
+        completion-category-overrides
+        '((file (styles partial-completion basic))
+          (eglot (styles orderless basic))
+          (eglot-capf (styles orderless basic)))))
 
 (use-package corfu
   :custom
@@ -115,9 +103,10 @@
   (corfu-preselect 'prompt)
   :init
   (global-corfu-mode 1)
-  (corfu-popupinfo-mode 1)
   :config
-  (setq corfu-popupinfo-delay 0.5)
+  (corfu-popupinfo-mode 1)
+  (setq corfu-popupinfo-delay 0.5
+        tab-always-indent 'complete)
   (general-define-key
    :keymaps 'corfu-map
    "C-j"      #'corfu-next
@@ -127,24 +116,32 @@
    "TAB"      #'corfu-insert
    "<tab>"    #'corfu-insert))
 
+(use-package cape
+  :init
+  (add-hook 'prog-mode-hook
+            (lambda ()
+              (add-hook 'completion-at-point-functions #'cape-file t t)
+              (add-hook 'completion-at-point-functions #'cape-keyword t t)
+              (add-hook 'completion-at-point-functions #'cape-dabbrev t t))))
+
 (use-package undo-fu
   :after evil
-  :config
-  (setq undo-limit 6710886400
-        undo-strong-limit 100663296
-        undo-outer-limit 1006632960)
-  )
+  :custom
+  (undo-limit 6710886400)
+  (undo-strong-limit 100663296)
+  (undo-outer-limit 1006632960))
 
 (use-package undo-fu-session
   :after undo-fu
   :init
-  (undo-fu-session-global-mode)
-  :config
-  (setq undo-fu-session-incompatible-files '("/COMMIT_EDITMSG\\'" "/git-rebase-todo\\'")))
+  (undo-fu-session-global-mode 1)
+  :custom
+  (undo-fu-session-incompatible-files
+   '("/COMMIT_EDITMSG\\'" "/git-rebase-todo\\'")))
 
 (use-package vundo
-  :config
-  (setq vundo-compact-display t))
+  :custom
+  (vundo-compact-display t))
 
 (provide 'init-completion)
 ;;; init-completion.el ends here
