@@ -24,8 +24,7 @@
 (use-package flycheck-eglot
   :ensure t
   :after (flycheck eglot)
-  :config
-  (global-flycheck-eglot-mode 1))
+  :hook (eglot-managed-mode . flycheck-eglot-mode))
 
 (provide 'init-flycheck)
 ;;; init-flycheck.el ends here

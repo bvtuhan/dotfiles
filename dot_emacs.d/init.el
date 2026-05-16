@@ -22,6 +22,7 @@
 (scroll-bar-mode -1)
 (tooltip-mode -1)
 (blink-cursor-mode 0)
+(setq make-backup-files nil)
 (setq inhibit-startup-message t)
 (setq initial-scratch-message "")
 (setq initial-major-mode 'text-mode)
@@ -64,16 +65,19 @@
                 yasnippet-snippets yellowbeans-theme zig-ts-mode))
  '(package-vc-selected-packages
    '((yellowbeans-theme :url "https://github.com/bvtuhan/yellowbeans-theme-emacs"))))
+
+;; theme
 (use-package yellowbeans-theme
   :vc (:url "https://github.com/bvtuhan/yellowbeans-theme-emacs"
             :rev :newest)
   :config
   (load-theme 'yellowbeans t))
 
+;; font
 (defun my/set-font ()
   (if (find-font (font-spec :family "Iosevka Fixed"))
-      (set-face-attribute 'default nil :family "Iosevka Fixed" :height 160)
-    (set-face-attribute 'default nil :family "monospace" :height 160)))
+      (set-face-attribute 'default nil :family "Iosevka Fixed" :height 130)
+    (set-face-attribute 'default nil :family "monospace" :height 130)))
 
 (my/set-font)
 (custom-set-faces

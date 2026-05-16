@@ -20,26 +20,7 @@
   (treesit-font-lock-level 4)
   :config
   (add-to-list 'treesit-extra-load-path
-               (expand-file-name "tree-sitter/" user-emacs-directory))
-
-  ;; Extra grammar sources not always built in.
-  (setq treesit-language-source-alist
-        '((bash       "https://github.com/tree-sitter/tree-sitter-bash")
-          (c          "https://github.com/tree-sitter/tree-sitter-c")
-          (zig        "https://github.com/tree-sitter-grammars/tree-sitter-zig" "master" "src")
-          (cpp        "https://github.com/tree-sitter/tree-sitter-cpp")
-          (css        "https://github.com/tree-sitter/tree-sitter-css")
-          (go         "https://github.com/tree-sitter/tree-sitter-go")
-          (html       "https://github.com/tree-sitter/tree-sitter-html")
-          (javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")
-          (json       "https://github.com/tree-sitter/tree-sitter-json")
-          (python     "https://github.com/tree-sitter/tree-sitter-python")
-          (rust       "https://github.com/tree-sitter/tree-sitter-rust")
-          (toml       "https://github.com/tree-sitter/tree-sitter-toml")
-          (tsx        "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
-          (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
-          (yaml       "https://github.com/ikatyang/tree-sitter-yaml"))))
-
+               (expand-file-name "tree-sitter/" user-emacs-directory)))
 
 (use-package treesit-auto
   :ensure t
@@ -67,10 +48,12 @@
 
 
 ;; Hook example
+;;  (prog-mode . hl-todo-mode) gets auto.
+;;  extended to  (add-hook prog-mode-hook ...)
 ;; :hook ((prog-mode . hl-todo-mode)
 ;;        (markdown-mode . hl-todo-mode)
 ;;        (org-mode . hl-todo-mode)
-;;        (some-mode-hook . hl-todo-mode))
+;;        (some-mode. hl-todo-mode))
 
 (use-package rust-mode
   :ensure t
