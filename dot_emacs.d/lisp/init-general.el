@@ -124,7 +124,7 @@
            :which-key "Open private configuration in new window")
     "fP" '((lambda ()
              (interactive)
-             (dired-x-find-file-other-winow user-emacs-directory)
+             (dired-x-find-file-other-window user-emacs-directory)
              (find-file user-emacs-directory))
            :which-key "Open private configuration")
 
@@ -132,6 +132,11 @@
              (interactive)
              (dired-x-find-file-other-window "~/notes/"))
            :which-key "Locate private notes")
+
+    "fc" '((lambda ()
+             (interactive)
+             (find-file "~/cs-doom-log/"))
+           :which-key "Open ~/cs-doom-log/")
 
     "w" '(evil-window-map :which-key "window")
 

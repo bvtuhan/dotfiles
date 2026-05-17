@@ -2,6 +2,6 @@
 # name: example block
 # key: ex
 # --
-#+BEGIN_EX
+#+BEGIN_EXAMPLE
 $1
-#+END_EX
+#+END_EXAMPLE
