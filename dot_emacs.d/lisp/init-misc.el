@@ -50,6 +50,16 @@
          "(provide '" feature-name ")\n"
          ";;; " file-name " ends here\n")))))
 
+(use-package ace-window)
+
+;; formatter
+(add-hook 'before-save-hook #'delete-trailing-whitespace)
+(use-package apheleia
+  :ensure t
+  :config
+  (setf (alist-get 'clang-format apheleia-formatters)
+        '("clang-format" "--style={BasedOnStyle: LLVM, IndentWidth: 4, TabWidth: 4, UseTab: Never}"))
+  (apheleia-global-mode +1))
 
 (provide 'init-misc)
 ;;; init-misc.el ends here

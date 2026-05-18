@@ -39,6 +39,7 @@
 
   ;; GLOBAL KEYBINDINGS HERE
   (general-nmap
+    :states 'motion
     "gr" #'xref-find-references
     "gd" #'xref-find-definitions
     "K"  #'eldoc-doc-buffer)

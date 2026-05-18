@@ -41,8 +41,8 @@
             (lambda ()
               (setq-local eldoc-documentation-strategy
                           #'eldoc-documentation-compose)
-              (eglot-inlay-hints-mode 1)
-              (add-hook 'before-save-hook #'eglot-format-buffer nil t)))
+              (eglot-inlay-hints-mode 1)))
+  ;; (add-hook 'before-save-hook #'eglot-format-buffer nil t)))
 
   (my/leader-keys
     "c"   '(:ignore t :which-key "code")

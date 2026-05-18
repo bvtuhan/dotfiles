@@ -55,51 +55,11 @@
   (vertico-cycle t))
 
 (use-package savehist
+  :ensure nil
   :init
   (savehist-mode 1))
 
-(use-package marginalia
-  :init
-  (marginalia-mode 1)
-  :general
-  ("M-A" #'marginalia-cycle)
-  (:keymaps 'minibuffer-local-map
-            "M-A" #'marginalia-cycle))
-
 (use-package consult)
-
-(defun +consult/ripgrep (dir)
-  "Run `consult-ripgrep' in DIR."
-  (interactive "DSelect dir: ")
-  (consult-ripgrep dir))
-
-(defun +consult/org-ripgrep ()
-  "Run `consult-ripgrep' in `org-directory'."
-  (interactive)
-  (consult-ripgrep org-directory))
-
-(defun +consult-line ()
-  "Run `consult-line' and populate Evil search history."
-  (interactive)
-  (consult-line)
-  (when-let ((search-pattern (car consult--line-history)))
-    (setq evil-ex-search-pattern
-          (evil-ex-make-search-pattern search-pattern))
-    (evil-ex-search-activate-highlight evil-ex-search-pattern)))
-
-(use-package embark
-  :init
-  (setq prefix-help-command #'embark-prefix-help-command
-        which-key-use-C-h-commands nil)
-  :general
-  ("C-l" #'embark-act)
-  ("<mouse-3>" #'embark-act)
-  (:keymaps 'evil-normal-state-map
-            "C-l" #'embark-act
-            "<mouse-3>" #'embark-act))
-
-(use-package embark-consult
-  :after (embark consult))
 
 (use-package corfu
   :custom
