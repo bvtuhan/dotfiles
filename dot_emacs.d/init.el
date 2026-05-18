@@ -55,7 +55,15 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages nil)
+ '(package-selected-packages
+   '(ace-window apheleia cape cider clojure-ts-mode copilot corfu dape
+                diredfl dirvish doom-modeline embark-consult
+                evil-collection evil-commentary evil-goggles
+                evil-numbers evil-org evil-surround flycheck-eglot
+                flycheck-posframe general hl-todo jinx marginalia
+                orderless org-download org-fragtog rustic sly
+                treesit-auto undo-fu undo-fu-session vertico vundo
+                yasnippet-snippets yellowbeans-theme zig-ts-mode))
  '(package-vc-selected-packages
    '((yellowbeans-theme :url
                         "https://github.com/bvtuhan/yellowbeans-theme-emacs"))))
@@ -120,10 +128,12 @@
 ;; NOTE: Jinx uses hunspell backend.
 ;; It has nothing to do with the
 ;; custom dictionaries defined above.
+;; sudo pacman -S hunspell-en_us
 (defun switch/eng ()
   (interactive)
   (setq-local jinx-languages "en_US")
-  (setq-local cape-dict-file custom/en-wordlist)
+  ;; (setq-local cape-dict-file custom/en-wordlist) cape is ass in text-buffer
+  (setq-local ispell-complete-word-dict custom/en-wordlist)
   (when (bound-and-true-p jinx-mode)
     (jinx--load-dicts)
     (jinx--cleanup))
@@ -133,7 +143,8 @@
 (defun switch/ger ()
   (interactive)
   (setq-local jinx-languages "de_DE")
-  (setq-local cape-dict-file custom/de-wordlist)
+  ;; (setq-local cape-dict-file custom/de-wordlist) cape is ass in text-buffer
+  (setq-local ispell-complete-word-dict custom/de-wordlist)
   (when (bound-and-true-p jinx-mode)
     (jinx--load-dicts)
     (jinx--cleanup))

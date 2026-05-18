@@ -4,7 +4,7 @@
   :ensure nil
   :commands (dired dired-jump)
   :custom
-  ; (dired-kill-when-opening-new-dired-buffer t)
+                                        ; (dired-kill-when-opening-new-dired-buffer t)
   (dired-listing-switches "-algho --group-directories-first")
   (dired-dwim-target t)
   (dired-auto-revert-buffer #'dired-buffer-stale-p)
@@ -71,8 +71,14 @@
     (setq nerd-icons-color-icons nil)))
 
 (use-package dirvish
+  ;; main upstream is dead
+  :vc (:url "https://github.com/latiagertrutis/dirvish"
+            :rev :newest
+            :lisp-dir ".")
+  :load-path "elpa/dirvish/extensions"
   :init
-  (dirvish-override-dired-mode)
+  (add-to-list 'load-path
+               (expand-file-name "elpa/dirvish/extensions" user-emacs-directory))
   :custom
   (dirvish-cache-dir (expand-file-name "dirvish/" user-emacs-directory))
   (dirvish-reuse-session 'open)
@@ -81,6 +87,8 @@
   (dirvish-hide-details '(dirvish dirvish-side))
   (dirvish-hide-cursor '(dirvish dirvish-side))
   :config
+  (require 'dirvish-yank)
+  (dirvish-override-dired-mode)
   (general-define-key
    :states '(normal visual)
    :keymaps 'dirvish-mode-map
@@ -126,11 +134,11 @@
    "s S"     #'dirvish-relative-symlink
    "s h"     #'dirvish-hardlink))
 
-(with-eval-after-load 'wdired
-  (general-define-key
-   :states '(normal insert)
-   :keymaps 'wdired-mode-map
-   "<escape>" #'wdired-exit))
+(use-package autorevert
+  :ensure nil
+  :hook (dired-mode . auto-revert-mode)
+  :custom
+  (auto-revert-verbose nil))
 
 (provide 'init-dired)
 ;;; init-dired.el ends here

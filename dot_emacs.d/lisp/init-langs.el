@@ -20,7 +20,18 @@
   (treesit-font-lock-level 4)
   :config
   (add-to-list 'treesit-extra-load-path
-               (expand-file-name "tree-sitter/" user-emacs-directory)))
+               (expand-file-name "tree-sitter/" user-emacs-directory))
+  (setq treesit-language-source-alist
+        '((bash       "https://github.com/tree-sitter/tree-sitter-bash")
+          (c          "https://github.com/tree-sitter/tree-sitter-c")
+          (zig        "https://github.com/tree-sitter-grammars/tree-sitter-zig" "master" "src")
+          (cpp        "https://github.com/tree-sitter/tree-sitter-cpp")
+          (go         "https://github.com/tree-sitter/tree-sitter-go")
+          (json       "https://github.com/tree-sitter/tree-sitter-json")
+          (python     "https://github.com/tree-sitter/tree-sitter-python")
+          (rust       "https://github.com/tree-sitter/tree-sitter-rust")
+          (toml       "https://github.com/tree-sitter/tree-sitter-toml")
+          (yaml       "https://github.com/ikatyang/tree-sitter-yaml"))))
 
 (use-package treesit-auto
   :ensure t

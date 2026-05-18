@@ -133,13 +133,16 @@
               (add-hook 'completion-at-point-functions #'cape-file t t)
               (add-hook 'completion-at-point-functions #'cape-keyword t t)
               (add-hook 'completion-at-point-functions #'cape-dabbrev t t)))
-  (add-hook 'text-mode-hook
-            (lambda ()
-              (remove-hook 'completion-at-point-functions
-                           #'ispell-completion-at-point
-                           t)
-              (add-hook 'completion-at-point-functions #'cape-dict t t)
-              (add-hook 'completion-at-point-functions #'cape-dabbrev t t))))
+  ;; Testing cape-dict
+  ;; (add-hook 'text-mode-hook
+  ;;           (lambda ()
+  ;;             (remove-hook 'completion-at-point-functions
+  ;;                          #'ispell-completion-at-point
+  ;;                          t)
+  ;;             (add-hook 'completion-at-point-functions #'cape-dict t t)
+  ;;             (add-hook 'completion-at-point-functions #'cape-dabbrev t t)))
+  ;; nah, ispell-completion-at-point is at finest
+  )
 
 
 (use-package undo-fu
