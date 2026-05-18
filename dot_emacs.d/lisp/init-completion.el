@@ -101,15 +101,6 @@
 (use-package embark-consult
   :after (embark consult))
 
-(use-package orderless
-  :init
-  (setq completion-styles '(orderless basic)
-        completion-category-defaults nil
-        completion-category-overrides
-        '((file (styles partial-completion basic))
-          (eglot (styles orderless basic))
-          (eglot-capf (styles orderless basic)))))
-
 (use-package corfu
   :custom
   (corfu-cycle t)
@@ -141,7 +132,15 @@
             (lambda ()
               (add-hook 'completion-at-point-functions #'cape-file t t)
               (add-hook 'completion-at-point-functions #'cape-keyword t t)
+              (add-hook 'completion-at-point-functions #'cape-dabbrev t t)))
+  (add-hook 'text-mode-hook
+            (lambda ()
+              (remove-hook 'completion-at-point-functions
+                           #'ispell-completion-at-point
+                           t)
+              (add-hook 'completion-at-point-functions #'cape-dict t t)
               (add-hook 'completion-at-point-functions #'cape-dabbrev t t))))
+
 
 (use-package undo-fu
   :after evil

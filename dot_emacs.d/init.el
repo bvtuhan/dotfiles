@@ -55,16 +55,10 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(ace-window apheleia cape cider copilot corfu crdt dape diredfl dirvish
-                doom-modeline embark-consult evil-collection evil-commentary
-                evil-goggles evil-numbers evil-org evil-surround flycheck-eglot
-                flycheck-posframe general hl-todo jinx marginalia orderless
-                org-download org-fragtog rainbow-delimiters rustic sly
-                treesit-auto undo-fu undo-fu-session vertico vundo
-                yasnippet-snippets yellowbeans-theme zig-ts-mode))
+ '(package-selected-packages nil)
  '(package-vc-selected-packages
-   '((yellowbeans-theme :url "https://github.com/bvtuhan/yellowbeans-theme-emacs"))))
+   '((yellowbeans-theme :url
+                        "https://github.com/bvtuhan/yellowbeans-theme-emacs"))))
 
 ;; theme
 (use-package yellowbeans-theme
@@ -98,8 +92,53 @@
         '("clang-format" "--style={BasedOnStyle: LLVM, IndentWidth: 4, TabWidth: 4, UseTab: Never}"))
   (apheleia-global-mode +1))
 
-;; spell checker
-;; sudo pacman -S enchant hunspell hunspell-en_us
+;;; spell checker
+;; sudo pacman -S enchant hunspell hunspell-en_us words pkgconf hunspell-de
+
+;; let cape uses custom directory
+(defun find-first-custom-dir (&rest files)
+  "returns the first dictionary file"
+  (seq-find #'file-readable-p files))
+
+;; TODO: Add here Windows dir
+(defvar custom/en-wordlist
+  (find-first-custom-dir
+   "/usr/share/dict/american-english"
+   "/usr/share/dict/usa"
+   "/usr/share/dict/words"
+   "/usr/dict/words"))
+
+;; TODO: Add here Windows dir
+(defvar custom/de-wordlist
+  (find-first-custom-dir
+   "/usr/share/dict/ngerman"
+   "/usr/share/dict/german"
+   "/usr/share/dict/de_DE"
+   "/usr/share/dict/words"))
+(setq-default cape-dict-file custom/en-wordlist)
+
+;; NOTE: Jinx uses hunspell backend.
+;; It has nothing to do with the
+;; custom dictionaries defined above.
+(defun switch/eng ()
+  (interactive)
+  (setq-local jinx-languages "en_US")
+  (setq-local cape-dict-file custom/en-wordlist)
+  (when (bound-and-true-p jinx-mode)
+    (jinx--load-dicts)
+    (jinx--cleanup))
+  (message "Welcome"))
+
+;; sudo pacman -S hunspell-de
+(defun switch/ger ()
+  (interactive)
+  (setq-local jinx-languages "de_DE")
+  (setq-local cape-dict-file custom/de-wordlist)
+  (when (bound-and-true-p jinx-mode)
+    (jinx--load-dicts)
+    (jinx--cleanup))
+  (message "Willkommen"))
+
 (use-package jinx
   :ensure t
   :hook
@@ -114,6 +153,8 @@
   :config
   (with-eval-after-load 'evil
     (evil-global-set-key 'normal (kbd "z=") #'jinx-correct)))
+
+
 
 (require 'init-org)
 (require 'init-dired)
