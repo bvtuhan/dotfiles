@@ -31,7 +31,7 @@
   (add-to-list 'doom-modeline-mode-alist '(dashboard-mode . dashboard))
   (doom-modeline-def-modeline 'my-line
     '(bar modals matches buffer-info buffer-position selection-info)
-    '(buffer-encoding lsp major-mode process vcs check))
+    '(buffer-encoding lsp major-mode process vcs check)))
 
 (provide 'init-doom-modeline)
 ;;; init-doom-modeline.el ends here
