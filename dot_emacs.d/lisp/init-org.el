@@ -133,5 +133,16 @@
   :after org
   :hook (org-mode . org-fragtog-mode))
 
+(use-package org-noter
+  :defer t
+  :after (pdf-view)
+  :commands (org-noter org-noter-insert-note)
+  :bind (:map pdf-view-mode-map
+              ("C-c n i" . org-noter-insert-note))
+  :config
+  (with-eval-after-load 'evil
+    (evil-define-key 'normal pdf-view-mode-map
+      (kbd "i") #'org-noter-insert-note)))
+
 (provide 'init-org)
 ;;; init-org.el ends here
