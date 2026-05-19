@@ -131,7 +131,10 @@
 (use-package org-fragtog
   :ensure t
   :after org
-  :hook (org-mode . org-fragtog-mode))
+  :hook (org-mode . org-fragtog-mode)
+  :config
+  (setq org-preview-latex-image-directory
+        (expand-file-name "org-latex-preview/" temporary-file-directory)))
 
 (use-package org-noter
   :defer t
