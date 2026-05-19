@@ -8,9 +8,7 @@
   :ensure nil
   :hook ((org-mode . my/org-setup-auto-fill)
          (org-mode . hl-todo-mode)
-         (org-mode . visual-line-mode)
-         ;; (org-mode . flyspell-mode)
-         )
+         (org-mode . visual-line-mode))
   :custom
   (org-directory "~/org/")
   (org-agenda-files '("~/org/"))
@@ -30,6 +28,20 @@
   (org-refile-use-outline-path 'file)
   (org-outline-path-complete-in-steps nil)
   :config
+
+  (defun fragtog/render-all ()
+    (interactive)
+    (require 'org-fragtog)
+    (if (bound-and-true-p org-fragtog-mode)
+        (progn
+          (org-fragtog-mode -1)
+          (org-clear-latex-preview (point-min) (point-max))
+          (message "org-fragtog disabled"))
+      (org-fragtog-mode 1)
+      (org-latex-preview '(16))
+      (message "org-fragtog enabled")))
+
+  (define-key org-mode-map (kbd "C-c p") #'fragtog/render-all)
   (require 'org-tempo)
   (setq org-agenda-span 10
         org-agenda-start-on-weekday nil
@@ -130,8 +142,10 @@
 
 (use-package org-fragtog
   :ensure t
+  :defer t
   :after org
-  :hook (org-mode . org-fragtog-mode)
+  ;; do not autload
+  ;; :hook (org-mode . org-fragtog-mode)
   :config
   (setq org-preview-latex-image-directory
         (expand-file-name "org-latex-preview/" temporary-file-directory)))
