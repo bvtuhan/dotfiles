@@ -64,43 +64,43 @@
 
     "s"   '(:ignore t :which-key "search")
 
-    "s s" '(consult-line :which-key "Search current buffer")
-    "s S" '(consult-line-multi :which-key "Search all buffers")
-    "s o" '(consult-outline :which-key "Search outline")
-    "s i" '(consult-imenu :which-key "Search imenu")
-    "s I" '(consult-imenu-multi :which-key "Search imenu all buffers")
+    "ss" '(consult-line :which-key "Search current buffer")
+    "sS" '(consult-line-multi :which-key "Search all buffers")
+    "so" '(consult-outline :which-key "Search outline")
+    "si" '(consult-imenu :which-key "Search imenu")
+    "sI" '(consult-imenu-multi :which-key "Search imenu all buffers")
 
-    "s p" '((lambda ()
-              (interactive)
-              (consult-ripgrep
-               (if-let ((project (project-current)))
-                   (project-root project)
-                 default-directory)))
-            :which-key "Search project")
+    "sp" '((lambda ()
+             (interactive)
+             (consult-ripgrep
+              (if-let ((project (project-current)))
+                  (project-root project)
+                default-directory)))
+           :which-key "Search project")
 
-    "s d" '((lambda ()
-              (interactive)
-              (consult-ripgrep
-               (read-directory-name "Search directory: ")))
-            :which-key "Search directory"
-            )
+    "sd" '((lambda ()
+             (interactive)
+             (consult-ripgrep
+              (read-directory-name "Search directory: ")))
+           :which-key "Search directory"
+           )
 
-    "s g" '(consult-grep :which-key "Grep")
-    "s f" '(consult-find :which-key "Find file in directory")
-    "s F" '(consult-locate :which-key "Locate file")
+    "sg" '(consult-grep :which-key "Grep")
+    "sf" '(consult-find :which-key "Find file in directory")
+    "sF" '(consult-locate :which-key "Locate file")
 
-    "s r" '(consult-ripgrep :which-key "Ripgrep")
-    "s k" '(consult-keep-lines :which-key "Keep matching lines")
-    "s u" '(consult-focus-lines :which-key "Focus matching lines")
+    "sr" '(consult-ripgrep :which-key "Ripgrep")
+    "sk" '(consult-keep-lines :which-key "Keep matching lines")
+    "su" '(consult-focus-lines :which-key "Focus matching lines")
 
-    "s h" '(consult-history :which-key "Search minibuffer history")
-    "s m" '(consult-mark :which-key "Search marks")
-    "s M" '(consult-global-mark :which-key "Search global marks")
-    "s R" '(consult-register :which-key "Search registers")
+    "sh" '(consult-history :which-key "Search minibuffer history")
+    "sm" '(consult-mark :which-key "Search marks")
+    "sM" '(consult-global-mark :which-key "Search global marks")
+    "sR" '(consult-register :which-key "Search registers")
 
-    "s c" '(consult-command :which-key "Search commands")
-    "s e" '(consult-isearch-history :which-key "Search isearch history")
-    "s y" '(consult-yank-pop :which-key "Search kill ring")
+    "sc" '(consult-command :which-key "Search commands")
+    "se" '(consult-isearch-history :which-key "Search isearch history")
+    "sy" '(consult-yank-pop :which-key "Search kill ring")
 
     "b" '(:ignore t :which-key "Buffer")
     "bb" '(consult-buffer :which-key "consult-buffer")
@@ -121,17 +121,17 @@
            :which-key "Save all buffers")
     "fp" '((lambda ()
              (interactive)
-             (dired-x-find-file user-emacs-directory))
+             (find-file user-emacs-directory))
            :which-key "Open private configuration in new window")
     "fP" '((lambda ()
              (interactive)
-             (dired-x-find-file-other-window user-emacs-directory)
+             (find-file-other-window user-emacs-directory)
              (find-file user-emacs-directory))
            :which-key "Open private configuration")
 
     "fn" '((lambda ()
              (interactive)
-             (dired-x-find-file-other-window "~/notes/"))
+             (find-file-other-window "~/notes/"))
            :which-key "Locate private notes")
 
     "fc" '((lambda ()
