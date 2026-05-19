@@ -26,7 +26,15 @@
 (setq inhibit-startup-message t)
 (setq initial-scratch-message "")
 (setq initial-major-mode 'text-mode)
+
+;; HACK: https://github.com/minad/consult/discussions/853
+(require 'display-line-numbers)
+(defun display-line-numbers--turn-on ()
+  "Turn on `display-line-numbers-mode'."
+  (unless (or (minibufferp) (eq major-mode 'pdf-view-mode))
+    (display-line-numbers-mode)))
 (setq display-line-numbers-type 'relative)
+
 (global-display-line-numbers-mode 1)
 (setq suggest-key-bindings nil)
 (setq native-comp-async-report-warnings-errors nil)
