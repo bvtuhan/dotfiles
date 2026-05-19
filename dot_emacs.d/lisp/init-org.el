@@ -103,19 +103,6 @@
           ("PROJ" . font-lock-doc-face)
           ("NO"   . error)
           ("KILL" . error)))
-  (setq org-capture-templates
-        '(("t" "Personal todo" entry
-           (file+headline "todo.org" "Inbox")
-           "* [ ] %?\n%i\n%a"
-           :prepend t)
-          ("n" "Personal notes" entry
-           (file+headline "notes.org" "Inbox")
-           "* %u %?\n%i\n%a"
-           :prepend t)
-          ("j" "Journal" entry
-           (file+olp+datetree "journal.org")
-           "* %U %?\n%i\n%a"
-           :prepend t)))
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((emacs-lisp . t)
@@ -126,60 +113,12 @@
                     ("youtube"   . "https://youtube.com/watch?v=%s")
                     ("google"    . "https://google.com/search?q=%s")
                     ("wikipedia" . "https://en.wikipedia.org/wiki/%s")))
-    (add-to-list 'org-link-abbrev-alist abbrev))
-  (my/leader-keys
-    :keymaps 'org-mode-map
-    "m"   '(:ignore t :which-key "org")
-    "m#"  '(org-update-statistics-cookies :which-key "Update cookies")
-    "m'"  '(org-edit-special :which-key "Edit src block")
-    "m*"  '(org-ctrl-c-star :which-key "Toggle heading")
-    "m-"  '(org-ctrl-c-minus :which-key "Toggle item")
-    "mA"  '(org-archive-subtree-default :which-key "Archive")
-    "me"  '(org-export-dispatch :which-key "Export")
-    "mo"  '(org-set-property :which-key "Set property")
-    "mq"  '(org-set-tags-command :which-key "Set tags")
-    "mt"  '(org-todo :which-key "Todo state")
-    "mx"  '(org-toggle-checkbox :which-key "Toggle checkbox")
-
-    "ma"  '(:ignore t :which-key "attachments")
-    "maa" '(org-attach :which-key "Attach command")
-    "man" '(org-attach-new :which-key "New attachment")
-
-    "mc"  '(:ignore t :which-key "clock")
-    "mci" '(org-clock-in :which-key "Clock in")
-    "mco" '(org-clock-out :which-key "Clock out")
-    "mcg" '(org-clock-goto :which-key "Goto clock")
-    "mcc" '(org-clock-cancel :which-key "Cancel clock")
-
-    "md"  '(:ignore t :which-key "date")
-    "mdd" '(org-deadline :which-key "Deadline")
-    "mds" '(org-schedule :which-key "Schedule")
-    "mdt" '(org-time-stamp :which-key "Time stamp")
-
-    "mr"  '(:ignore t :which-key "refile")
-    "mrr" '(org-refile :which-key "Refile")
-
-    "ms"  '(:ignore t :which-key "tree")
-    "msn" '(org-narrow-to-subtree :which-key "Narrow to subtree")
-    "msN" '(widen :which-key "Widen"))
-
-  (general-define-key
-   :states '(normal visual)
-   :keymaps 'org-mode-map
-   "RET" 'org-open-at-point
-   "za"  'org-cycle
-   "zA"  'org-shifttab
-   "zM"  'outline-hide-body
-   "zR"  'outline-show-all))
+    (add-to-list 'org-link-abbrev-alist abbrev)))
 
 (use-package evil-org
   :after org
   :hook ((org-mode . evil-org-mode)
-         (evil-org-mode . evil-normalize-keymaps))
-  :config
-  (require 'evil-org-agenda)
-  (evil-org-agenda-set-keys))
-
+         (evil-org-mode . evil-normalize-keymaps)))
 
 (use-package org-download
   :ensure t

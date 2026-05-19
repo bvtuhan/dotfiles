@@ -59,7 +59,17 @@
   :config
   (setf (alist-get 'clang-format apheleia-formatters)
         '("clang-format" "--style={BasedOnStyle: LLVM, IndentWidth: 4, TabWidth: 4, UseTab: Never}"))
-  (apheleia-global-mode +1))
+  (apheleia-global-mode +1)
+  (add-hook 'TeX-mode-hook (lambda () (apheleia-mode -1)))
+  (add-hook 'LaTeX-mode-hook (lambda () (apheleia-mode -1))))
+
+(use-package pdf-tools
+  :if (display-graphic-p)
+  :defer t
+  :config
+  (pdf-tools-install :no-query)
+  (init-latex-select-viewer))
+
 
 (provide 'init-misc)
 ;;; init-misc.el ends here

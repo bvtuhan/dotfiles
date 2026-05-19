@@ -21,6 +21,7 @@
 (require 'init-elisp)
 (require 'init-common-lisp)
 (require 'init-clojure)
+(require 'init-tex)
 
 (provide 'init-langs)
 ;;; init-langs.el ends here

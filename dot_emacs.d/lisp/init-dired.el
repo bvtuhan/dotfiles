@@ -23,8 +23,7 @@
    "l"     #'dired-find-file
    "j"     #'dired-next-line
    "k"     #'dired-previous-line
-   "q"     #'quit-window
-   "C-c C-e" #'wdired-change-to-wdired-mode))
+   "q"     #'quit-window))
 
 (use-package dired-aux
   :ensure nil

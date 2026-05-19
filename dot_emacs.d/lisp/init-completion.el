@@ -86,13 +86,19 @@
    "TAB"      #'corfu-insert
    "<tab>"    #'corfu-insert))
 
+(defun custom/latex-setup ()
+  (add-hook 'completion-at-point-functions #'cape-file t t)
+  (add-hook 'completion-at-point-functions #'cape-tex t t))
+
+(defun custom/prog-completion-setup ()
+  (add-hook 'completion-at-point-functions #'cape-file t t)
+  (add-hook 'completion-at-point-functions #'cape-dabbrev t t))
+
+;; completion-at-point-functions
 (use-package cape
   :init
-  (add-hook 'prog-mode-hook
-            (lambda ()
-              (add-hook 'completion-at-point-functions #'cape-file t t)
-              (add-hook 'completion-at-point-functions #'cape-keyword t t)
-              (add-hook 'completion-at-point-functions #'cape-dabbrev t t)))
+  (add-hook 'LaTeX-mode-hook #'custom/latex-setup)
+  (add-hook 'prog-mode-hook #'custom/prog-completion-setup)
   ;; Testing cape-dict
   ;; (add-hook 'text-mode-hook
   ;;           (lambda ()

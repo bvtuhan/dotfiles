@@ -61,11 +61,12 @@
     "c w" '(delete-trailing-whitespace :which-key "Delete trailing whitespace")
     "c x" '(flycheck-list-errors :which-key "List errors"))
 
-  :bind
-  (:map eglot-mode-map
-        ("gr" . xref-find-references)
-        ("gd" . xref-find-definitions)
-        ("gi" . eglot-find-implementation)
-        ("K"  . eldoc-doc-buffer)))
+
+  (general-nmap
+    :states 'motion
+    "gr" #'xref-find-references
+    "gd" #'xref-find-definitions
+    "gi" #'eglot-find-implementation
+    "K"  #'eldoc-doc-buffer))
 
 (provide 'init-eglot)
