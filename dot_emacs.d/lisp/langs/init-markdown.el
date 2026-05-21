@@ -6,9 +6,11 @@
   :init
   (setq markdown-command "multimarkdown")
   :hook ((markdown-mode . (lambda ()
+                            (visual-line-mode)
                             (setq-local indent-tabs-mode nil)
                             (setq-local fill-column 80)
-                            (setq-local comment-fill-column 80))))
+                            (setq-local comment-fill-column 80)
+                            (auto-fill-mode 1))))
   :bind (:map markdown-mode-map
               ("C-c C-e" . markdown-do)))
 
