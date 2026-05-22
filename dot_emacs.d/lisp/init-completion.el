@@ -23,9 +23,6 @@
   :ensure nil
   :init
   (electric-pair-mode 1)
-  ;; :hook
-  ;; (org-mode . (lambda ()
-  ;;               (electric-pair-local-mode -1)))
   :custom
   (electric-pair-delete-adjacent-pairs t)
   (show-paren-delay 0)
@@ -52,7 +49,13 @@
   :custom
   (vertico-resize nil)
   (vertico-count 17)
-  (vertico-cycle t))
+  (vertico-cycle t)
+  :config
+  (require 'vertico-directory)
+  (define-key vertico-map (kbd "DEL") #'vertico-directory-delete-char)
+  (define-key vertico-map (kbd "<backspace>") #'vertico-directory-delete-char)
+  (define-key vertico-map (kbd "M-DEL") #'vertico-directory-delete-word)
+  (add-hook 'rfn-eshadow-update-overlay-hook #'vertico-directory-tidy))
 
 (use-package savehist
   :ensure nil
