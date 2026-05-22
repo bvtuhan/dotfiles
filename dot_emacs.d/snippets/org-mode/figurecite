@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: figure cite in org-latex
+# key: figurecite
+# --
+[[fig:$1]].

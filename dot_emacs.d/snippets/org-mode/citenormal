@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: cite org-latex
+# key: citenormal
+# --
+[cite:@$1 p. $2]

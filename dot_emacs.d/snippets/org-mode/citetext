@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: cite text in org-latex
+# key: citetext
+# --
+[cite/text:@$1]

@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: figure info in org-latex
+# key: figureinfo
+# --
+#+caption: $1
+#+NAME:   fig:$2
+#+ATTR_LATEX: :width $3\textwidth :placement [H]
