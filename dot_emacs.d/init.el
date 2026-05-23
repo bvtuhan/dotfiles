@@ -65,7 +65,9 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages nil)
  '(package-vc-selected-packages
-   '((yellowbeans-theme :url
+   '((dirvish :url "https://github.com/latiagertrutis/dirvish" :rev
+              :newest :lisp-dir ".")
+     (yellowbeans-theme :url
                         "https://github.com/bvtuhan/yellowbeans-theme-emacs"))))
 
 ;; theme
