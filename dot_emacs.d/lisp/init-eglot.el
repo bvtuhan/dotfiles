@@ -22,11 +22,13 @@
 
   :custom
   (eglot-autoshutdown nil)
+  (eglot-send-changes-idle-time 0.1)
+  (eglot-extend-to-xref t)
   (eglot-confirm-server-edits '((eglot-rename . nil)
                                 (t . diff)))
   :config
-
-  ;; lsp binaries
+  (fset #'jsonrpc--log-event #'ignore)
+  ;; custom lsp binaries
   (add-to-list 'eglot-server-programs
                '((zig-mode zig-ts-mode) . ("zls")))
 
@@ -42,24 +44,23 @@
               (setq-local eldoc-documentation-strategy
                           #'eldoc-documentation-compose)
               (eglot-inlay-hints-mode 1)))
-  ;; (add-hook 'before-save-hook #'eglot-format-buffer nil t)))
 
   (my/leader-keys
     "c"   '(:ignore t :which-key "code")
 
-    "c a" '(eglot-code-actions :which-key "LSP execute code action")
-    "c r" '(eglot-rename :which-key "LSP rename")
-    "c f" '(eglot-format :which-key "Format buffer/region")
+    "ca" '(eglot-code-actions :which-key "LSP execute code action")
+    "cr" '(eglot-rename :which-key "LSP rename")
+    "cf" '(eglot-format :which-key "Format buffer/region")
 
-    "c d" '(xref-find-definitions :which-key "Jump to definition")
-    "c D" '(xref-find-references :which-key "Jump to references")
-    "c i" '(eglot-find-implementation :which-key "Find implementations")
-    "c k" '(eldoc-doc-buffer :which-key "Jump to documentation")
+    "cd" '(xref-find-definitions :which-key "Jump to definition")
+    "cD" '(xref-find-references :which-key "Jump to references")
+    "ci" '(eglot-find-implementation :which-key "Find implementations")
+    "ck" '(eldoc-doc-buffer :which-key "Jump to documentation")
 
-    "c c" '(compile :which-key "Compile")
-    "c C" '(recompile :which-key "Recompile")
-    "c w" '(delete-trailing-whitespace :which-key "Delete trailing whitespace")
-    "c x" '(flycheck-list-errors :which-key "List errors"))
+    "cc" '(compile :which-key "Compile")
+    "cC" '(recompile :which-key "Recompile")
+    "cw" '(delete-trailing-whitespace :which-key "Delete trailing whitespace")
+    "cx" '(flycheck-list-errors :which-key "List errors"))
 
 
   (general-nmap

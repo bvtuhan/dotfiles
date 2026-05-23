@@ -6,9 +6,11 @@
 
 (use-package org
   :ensure nil
+
   :hook ((org-mode . my/org-setup-auto-fill)
          (org-mode . hl-todo-mode)
          (org-mode . visual-line-mode))
+
   :custom
   (org-directory "~/org/")
   (org-agenda-files '("~/org/"))
@@ -27,8 +29,8 @@
                         (org-agenda-files :maxlevel . 3)))
   (org-refile-use-outline-path 'file)
   (org-outline-path-complete-in-steps nil)
-  :config
 
+  :config
   (defun fragtog/render-all ()
     (interactive)
     (require 'org-fragtog)
@@ -43,12 +45,13 @@
 
   (define-key org-mode-map (kbd "C-c p") #'fragtog/render-all)
   (require 'org-tempo)
+  (require 'oc-csl)
+  (require 'org-latex)
   (setq org-agenda-span 10
-        org-agenda-start-on-weekday nil
-        org-agenda-window-setup 'current-window
         org-return-follows-link t
         org-src-tab-acts-natively t
         org-src-preserve-indentation t
+        org-export-with-smart-quotes t
         org-edit-src-content-indentation 0
         org-confirm-babel-evaluate nil
         org-src-window-setup 'current-window
@@ -97,6 +100,7 @@
      ("\\subsection{%s}" . "\\subsection*{%s}")
      ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
      ("\\paragraph{%s}" . "\\paragraph*{%s}")))
+
   (setq org-todo-keywords
         '((sequence "TODO(t)" "PROJ(p)" "LOOP(r)" "STRT(s)" "WAIT(w)" "HOLD(h)" "IDEA(i)"
                     "|"
@@ -106,6 +110,7 @@
                     "[X](D)")
           (sequence "|"
                     "OKAY(o)" "YES(y)" "NO(n)")))
+
   (setq org-todo-keyword-faces
         '(("[-]"  . warning)
           ("STRT" . warning)
@@ -115,12 +120,14 @@
           ("PROJ" . font-lock-doc-face)
           ("NO"   . error)
           ("KILL" . error)))
+
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((emacs-lisp . t)
      (python . t)
      (C . t)
      (shell . t)))
+
   (dolist (abbrev '(("github"    . "https://github.com/%s")
                     ("youtube"   . "https://youtube.com/watch?v=%s")
                     ("google"    . "https://google.com/search?q=%s")
@@ -144,8 +151,6 @@
   :ensure t
   :defer t
   :after org
-  ;; do not autload
-  ;; :hook (org-mode . org-fragtog-mode)
   :config
   (setq org-preview-latex-image-directory
         (expand-file-name "org-latex-preview/" temporary-file-directory)))
