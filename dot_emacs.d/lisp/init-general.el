@@ -55,15 +55,20 @@
     :prefix "SPC"
     :global-prefix "C-SPC")
 
+  (defun custom/open-eshell-horizontal ()
+    (interactive)
+    (split-window-below)
+    (other-window 1)
+    (eshell))
+
   (my/leader-keys
-    "SPC" '(find-file :which-key "Find file")
+    "SPC" '(custom/open-eshell-horizontal :which-key "Open eshell in a vertical window")
     "."   '(find-file :which-key "Find file")
     ","   '(consult-buffer :which-key "Switch buffer")
     ":"   '(execute-extended-command :which-key "M-x")
     "/"   '(consult-ripgrep :which-key "Fuzzy search")
 
     "s"   '(:ignore t :which-key "search")
-
     "ss" '(consult-line :which-key "Search current buffer")
     "sS" '(consult-line-multi :which-key "Search all buffers")
     "so" '(consult-outline :which-key "Search outline")
@@ -142,20 +147,20 @@
     "w" '(evil-window-map :which-key "window")
 
     "d"   '(:ignore t :which-key "debug")
-    "d d" '(dape :which-key "Start debugger")
-    "d b" '(dape-breakpoint-toggle :which-key "Toggle breakpoint")
-    "d B" '(dape-breakpoint-remove-all :which-key "Remove all breakpoints")
-    "d c" '(dape-continue :which-key "Continue")
-    "d n" '(dape-next :which-key "Next")
-    "d s" '(dape-step-in :which-key "Step in")
-    "d o" '(dape-step-out :which-key "Step out")
-    "d r" '(dape-restart :which-key "Restart")
-    "d q" '(dape-quit :which-key "Quit")
-    "d D" '(dape-disconnect-quit :which-key "Disconnect")
-    "d i" '(dape-info :which-key "Info")
-    "d R" '(dape-repl :which-key "REPL")
-    "d x" '(dape-evaluate-expression :which-key "Evaluate")
-    "d w" '(dape-watch-dwim :which-key "Watch")
+    "dd" '(dape :which-key "Start debugger")
+    "db" '(dape-breakpoint-toggle :which-key "Toggle breakpoint")
+    "dB" '(dape-breakpoint-remove-all :which-key "Remove all breakpoints")
+    "dc" '(dape-continue :which-key "Continue")
+    "dn" '(dape-next :which-key "Next")
+    "ds" '(dape-step-in :which-key "Step in")
+    "do" '(dape-step-out :which-key "Step out")
+    "dr" '(dape-restart :which-key "Restart")
+    "dq" '(dape-quit :which-key "Quit")
+    "dD" '(dape-disconnect-quit :which-key "Disconnect")
+    "di" '(dape-info :which-key "Info")
+    "dR" '(dape-repl :which-key "REPL")
+    "dx" '(dape-evaluate-expression :which-key "Evaluate")
+    "dw" '(dape-watch-dwim :which-key "Watch")
 
     "l"  '(:ignore t :wk "live share/collab")
     "lb" '(crdt-switch-to-buffer :wk "switch to shared buffer")
@@ -194,8 +199,7 @@
    "C-w C-l" 'evil-window-right
    "C-w C-h" 'evil-window-left)
 
-  (general-unbind '(motion insert) "C-z")
-  )
+  (general-unbind '(motion insert) "C-z"))
 
 (provide 'init-general)
 ;;; init-general.el ends here

@@ -26,11 +26,11 @@
   :custom
   (electric-pair-delete-adjacent-pairs t)
   (show-paren-delay 0)
-  :config
-  (setq electric-pair-inhibit-predicate
-        (lambda (char)
-          (or (minibufferp)
-              (electric-pair-default-inhibit char)))))
+  (electric-pair-inhibit-predicate
+   (lambda (char)
+     (or (minibufferp)
+         (electric-pair-default-inhibit char)))))
+
 
 (use-package yasnippet
   :init
@@ -62,6 +62,12 @@
   :init
   (savehist-mode 1))
 
+(use-package marginalia
+  :ensure t
+  :config
+  (marginalia-mode))
+
+;; keybindings are defined in `init-general.el'
 (use-package consult)
 
 (use-package corfu
@@ -75,43 +81,51 @@
   (corfu-preview-current nil)
   (corfu-preselect 'prompt)
   :init
-  (global-corfu-mode 1)
+  (global-corfu-mode 1))
+
+(use-package corfu-popupinfo
+  :after corfu
+  :ensure nil
+  :hook (corfu-mode . corfu-popupinfo-mode)
+  :custom
+  (corfu-popupinfo-delay '(0.25 . 0.1))
+  (corfu-popupinfo-hide nil)
   :config
-  (corfu-popupinfo-mode 1)
-  (setq corfu-popupinfo-delay 0.5
-        tab-always-indent 'complete)
-  (general-define-key
-   :keymaps 'corfu-map
-   "C-j"      #'corfu-next
-   "C-k"      #'corfu-previous
-   "<escape>" #'corfu-quit
-   "RET"      #'corfu-insert
-   "TAB"      #'corfu-insert
-   "<tab>"    #'corfu-insert))
+  (corfu-popupinfo-mode))
 
-(defun custom/latex-setup ()
-  (add-hook 'completion-at-point-functions #'cape-file t t)
-  (add-hook 'completion-at-point-functions #'cape-tex t t))
+(use-package corfu-terminal
+  :if (not (display-graphic-p))
+  :ensure t
+  :config
+  (corfu-terminal-mode))
 
-(defun custom/prog-completion-setup ()
-  (add-hook 'completion-at-point-functions #'cape-file t t)
-  (add-hook 'completion-at-point-functions #'cape-dabbrev t t))
+;; for some reason, this will stay within this file
+(use-package eshell
+  :ensure nil
+  :hook
+  (eshell-mode . corfu-mode)
+  :custom
+  (eshell-scroll-to-bottom-on-input t)
+  (eshell-kill-processes-on-exit t))
 
 ;; completion-at-point-functions
 (use-package cape
   :init
+  (defun custom/latex-setup ()
+    (add-hook 'completion-at-point-functions #'cape-file t t)
+    (add-hook 'completion-at-point-functions #'cape-tex t t))
+  (defun custom/prog-completion-setup ()
+    (add-hook 'completion-at-point-functions #'cape-file t t)
+    (add-hook 'completion-at-point-functions #'cape-dabbrev t t))
   (add-hook 'LaTeX-mode-hook #'custom/latex-setup)
-  (add-hook 'prog-mode-hook #'custom/prog-completion-setup)
-  ;; Testing cape-dict
-  ;; (add-hook 'text-mode-hook
-  ;;           (lambda ()
-  ;;             (remove-hook 'completion-at-point-functions
-  ;;                          #'ispell-completion-at-point
-  ;;                          t)
-  ;;             (add-hook 'completion-at-point-functions #'cape-dict t t)
-  ;;             (add-hook 'completion-at-point-functions #'cape-dabbrev t t)))
-  ;; nah, ispell-completion-at-point is at finest
-  )
+  (add-hook 'prog-mode-hook #'custom/prog-completion-setup))
+
+(use-package orderless
+  :custom
+  (completion-styles '(orderless basic))
+  (completion-category-defaults nil)
+  (completion-category-overrides
+   '((file (styles partial-completion)))))
 
 
 (use-package undo-fu
