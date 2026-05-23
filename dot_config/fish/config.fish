@@ -14,5 +14,9 @@ status --is-interactive; and pyenv init - | source
 
 alias sway-gpu='sway --unsupported-gpu'
 alias go-dot='cd ~/.local/share/chezmoi/'
+alias godot='cd ~/.local/share/chezmoi/'
+alias shn='shutdown +0'
+alias sleep='sudo systemctl sleep'
+alias suspend='sudo systemctl suspend'
 alias geforcenow='flatpak run com.nvidia.geforcenow'
 functions -e wget
