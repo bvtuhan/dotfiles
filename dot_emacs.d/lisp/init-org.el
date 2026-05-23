@@ -46,7 +46,6 @@
   (define-key org-mode-map (kbd "C-c p") #'fragtog/render-all)
   (require 'org-tempo)
   (require 'oc-csl)
-  (require 'org-latex)
   (setq org-agenda-span 10
         org-return-follows-link t
         org-src-tab-acts-natively t
