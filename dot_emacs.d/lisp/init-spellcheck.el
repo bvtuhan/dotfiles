@@ -12,6 +12,7 @@
   (find-first-custom-dir
    "/usr/share/dict/american-english"
    "/usr/share/dict/usa"
+   "~/.local/share/dict/en_US.words" ;; this should be for Windows
    "/usr/share/dict/words"
    "/usr/dict/words"))
 
@@ -31,7 +32,6 @@
 (defun switch/eng ()
   (interactive)
   (setq-local jinx-languages "en_US")
-  ;; (setq-local cape-dict-file custom/en-wordlist) cape is ass in text-buffer
   (setq-local ispell-complete-word-dict custom/en-wordlist)
   (when (bound-and-true-p jinx-mode)
     (jinx--load-dicts)
@@ -42,7 +42,6 @@
 (defun switch/ger ()
   (interactive)
   (setq-local jinx-languages "de_DE")
-  ;; (setq-local cape-dict-file custom/de-wordlist) cape is ass in text-buffer
   (setq-local ispell-complete-word-dict custom/de-wordlist)
   (when (bound-and-true-p jinx-mode)
     (jinx--load-dicts)

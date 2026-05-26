@@ -107,5 +107,8 @@
 (require 'init-spellcheck)
 (require 'init-treesit)
 
+(when (eq system-type 'windows-nt)
+  (require 'init-windows))
+
 (provide 'init)
 ;;; init.el ends here
