@@ -2,9 +2,9 @@
 #+author:    bvtuhan
 #+email:     jjackson.stormm@gmail.com
 
-* Windows Installation
+** Windows Installation
 
-** Post-Installation
+*** Post-Installation
 
 Create a custom env. variable:
 #+BEGIN_EXAMPLE
@@ -12,11 +12,14 @@ Variable name: HOME
 Variable value: C:\Users\batuhan
 #+END_EXAMPLE
 
+*** Installing Emacs
 
-
-** Package Dependencies
-
+For some reason, the native build of the Emacs does not run
+smoothly. But we can still use the version maintained by the =MSYS2=.
 1. Download [[https://www.msys2.org/]]
+   Do not forget to add the =C:\msys64\mingw64\bin=,
+   =C:\msys64\usr\bin= and =C:\msys64\ucrt64\bin= to PATH after the
+   installation
 2. We will be using =ucrt64.exe= for our =emacs= as well as the
    extensions.
 #+BEGIN_SRC bash
@@ -25,6 +28,14 @@ pacman -S --needed \
 mingw-w64-ucrt-x86_64-emacs \
 mingw-w64-ucrt-x86_64-git \
 mingw-w64-ucrt-x86_64-gcc \
+#+END_SRC
+
+*** Spellchecking Dependencies
+
+We are also going to use the =ucrt64.exe= for the dependencies.
+#+BEGIN_SRC bash
+pacman -Syu
+pacman -S --needed \
 mingw-w64-ucrt-x86_64-pkgconf \
 mingw-w64-ucrt-x86_64-enchant \
 mingw-w64-ucrt-x86_64-hunspell \
@@ -33,10 +44,91 @@ mingw-w64-ucrt-x86_64-hunspell-en
 echo 'export PATH="/mingw64/bin:$PATH"' >> ~/.bashrc
 echo 'export PATH="/ucrt64/bin:$PATH"' >> ~/.bashrc
 
+# ensure
+mkdir -p /ucrt64/share/hunspell
+mkdir -p ~/.local/share/dict
+
+# for english dict.
 hunspell -d en_US -D
 mkdir -p ~/.local/share/dict
 tail -n +2 /ucrt64/share/hunspell/en_US.dic \
   | sed 's#/.*##' \
   | tr -d '\r' \
   > ~/.local/share/dict/en_US.words
+
+# for german, msys2 does not mantain an individual package
+# therefore manually installing is required
+curl -Lo /ucrt64/share/hunspell/de_DE.dic https://raw.githubusercontent.com/elastic/hunspell/master/dicts/de_DE/de_DE.dic
+curl -Lo /ucrt64/share/hunspell/de_DE.aff https://raw.githubusercontent.com/elastic/hunspell/master/dicts/de_DE/de_DE.aff
+tail -n +2 /ucrt64/share/hunspell/de_DE.dic \
+  | sed 's#/.*##' \
+  | tr -d '\r' \
+  > ~/.local/share/dict/de_DE.words
+#+END_SRC
+
+*** =org-fragtog= Dependencies
+
+I have tested =org-fragtog= on Windows, and it seems to not be working
+for me at ll. I installed [[https://miktex.org/download][MikTeX]] and added it into PATH, but still no
+luck.
+
+*** =org-download= Dependencies
+
+For Windows, you have to install [[https://imagemagick.org/script/download.php][ImageMagick]] and add it to PATH for
+=org-download= to work. (command =magick= should be available in the
+terminal environment)
+
+=WSL= does not support clipboard access for some reason, therefore
+=org-download= does not work on it.
+
+** POSIX Installation
+
+*** Spellchecker Dependencies
+
+#+BEGIN_SRC bash
+sudo pacman -S enchant hunspell hunspell-en_us words pkgconf hunspell-de base-devel
+#+END_SRC
+
+*** Ubuntu WSL =clangd= Configuration
+
+Create a =config.yaml= file under =/.config/clangd= and add the
+following:
+
+#+BEGIN_SRC yaml
+# ~/.config/clangd/config.yaml
+CompileFlags:
+  Add:
+    - -isystem
+    - /usr/include/c++/13
+    - -isystem
+    - /usr/include/x86_64-linux-gnu/c++/13
+    - -isystem
+    - /usr/include/c++/13/bits
+#+END_SRC
+
+There is a weird bug with =clangd= where it cannot find the standard
+library headers, so you have to add the include paths manually.
+
+You have to adjust the version depending on the =gcc= you have
+installed. You can check the version with =gcc --version=. For
+instance, if you have =gcc 12= installed, you should replace 13 with
+12 in the paths.
+
+*** =org-download= Dependencies
+
+#+BEGIN_SRC bash
+# For X11
+sudo apt install xclip
+# For Wayland
+sudo apt install wl-clipboard
+#+END_SRC
+
+*** =org-fragtog= Dependencies
+
+#+BEGIN_SRC bash
+# Ubuntu
+sudo apt install texlive-full # or apt-get
+
+# Arch Linux
+sudo pacman -S texlive-full # or yay i dont know
 #+END_SRC

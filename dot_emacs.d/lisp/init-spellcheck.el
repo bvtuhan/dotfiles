@@ -16,13 +16,14 @@
    "/usr/share/dict/words"
    "/usr/dict/words"))
 
-;; TODO: Add here Windows dir
 (defvar custom/de-wordlist
   (find-first-custom-dir
    "/usr/share/dict/ngerman"
    "/usr/share/dict/german"
    "/usr/share/dict/de_DE"
+   "~/.local/share/dict/de_DE.words" ;; this should be for Windows
    "/usr/share/dict/words"))
+
 (setq-default cape-dict-file custom/en-wordlist)
 
 ;; NOTE: Jinx uses hunspell backend.
@@ -56,7 +57,8 @@
    (latex-mode . jinx-mode)
    (LaTeX-mode . jinx-mode)
    (markdown-mode . jinx-mode)
-   (gfm-mode . jinx-mode))
+   (gfm-mode . jinx-mode)
+   (jinx-mode . switch/eng))
   :bind
   (("M-$" . jinx-correct))
   :config
