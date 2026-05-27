@@ -23,7 +23,7 @@ set $menu wmenu-run
 ### Output configuration
 #
 # Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
-output * bg ./holly.png fill
+output * bg ./freckles-lights.jpg fill
 #
 # Example configuration:
 #
