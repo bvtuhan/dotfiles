@@ -249,7 +249,9 @@ include /etc/sway/config.d/*
 
 # Fullscreen screenshot to clipboard
 bindsym Print exec grim - | wl-copy
+bindsym $mod+p exec grim - | wl-copy
 
 # Select area and copy to clipboard
 bindsym Shift+Print exec grim -g "$(slurp)" - | wl-copy
 bindsym Shift+Insert exec grim -g "$(slurp)" - | wl-copy
+bindsym $mod+Shift+p exec grim -g "$(slurp)" - | wl-copy
