@@ -79,9 +79,10 @@
 
 ;; font
 (defun my/set-font ()
+  "Changing the font yeah."
   (if (find-font (font-spec :family "Iosevka Fixed"))
-      (set-face-attribute 'default nil :family "Iosevka Fixed" :height 130)
-    (set-face-attribute 'default nil :family "monospace" :height 130)))
+      (set-face-attribute 'default nil :family "Iosevka Fixed" :height 120)
+    (set-face-attribute 'default nil :family "monospace" :height 120)))
 
 (my/set-font)
 (custom-set-faces
