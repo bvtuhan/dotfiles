@@ -27,17 +27,6 @@
   :config
   (evil-collection-init))
 
-(use-package evil-surround
-  :config
-  (global-evil-surround-mode 1))
-
-(use-package evil-commentary
-  :after evil
-  :config
-  (evil-commentary-mode))
-
-(use-package evil-numbers)
-
 (use-package evil-goggles
   :after evil
   :init

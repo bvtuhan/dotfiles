@@ -28,6 +28,7 @@
                                 (t . diff)))
   :config
   (fset #'jsonrpc--log-event #'ignore)
+
   ;; custom lsp binaries
   (add-to-list 'eglot-server-programs
                '((zig-mode zig-ts-mode) . ("zls")))

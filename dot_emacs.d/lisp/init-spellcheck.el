@@ -30,7 +30,8 @@
 ;; It has nothing to do with the
 ;; custom dictionaries defined above.
 ;; sudo pacman -S hunspell-en_us
-(defun switch/eng ()
+(defun switch-eng ()
+  "Enable English spellchecking."
   (interactive)
   (setq-local jinx-languages "en_US")
   (setq-local ispell-complete-word-dict custom/en-wordlist)
@@ -40,7 +41,8 @@
   (message "Welcome"))
 
 ;; sudo pacman -S hunspell-de
-(defun switch/ger ()
+(defun switch-ger ()
+  "Enable German spellchecking."
   (interactive)
   (setq-local jinx-languages "de_DE")
   (setq-local ispell-complete-word-dict custom/de-wordlist)

@@ -4,7 +4,7 @@
   :ensure nil
   :commands (dired dired-jump)
   :custom
-                                        ; (dired-kill-when-opening-new-dired-buffer t)
+  ;; (dired-kill-when-opening-new-dired-buffer t)
   (dired-listing-switches "-algho --group-directories-first")
   (dired-dwim-target t)
   (dired-auto-revert-buffer #'dired-buffer-stale-p)
@@ -75,7 +75,6 @@
      :url "https://github.com/latiagertrutis/dirvish"
      :rev :newest
      :lisp-dir ".")))
-
 
 ;; we need this for dirvish
 (eval-and-compile

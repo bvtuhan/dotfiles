@@ -22,7 +22,9 @@
 
 (use-package repeat
   :ensure nil
-  :custom
+  :defer t
+  :after dape
+  :config
   (repeat-mode 1))
 
 (use-package emacs

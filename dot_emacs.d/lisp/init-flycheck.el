@@ -7,13 +7,10 @@
   :bind
   (:map flycheck-mode-map
         ("M-n" . flycheck-next-error)
-        ("M-p" . flycheck-previous-error))
+        ("M-N" . flycheck-previous-error)
+        ("C-c C-c" . flycheck-list-errors))
   :custom
-  (flycheck-check-syntax-automatically '(save mode-enabled))
-  :config
-  (my/leader-keys
-    "c w" '(delete-trailing-whitespace :which-key "Delete trailing whitespace")
-    "c x" '(flycheck-list-errors :which-key "List errors")))
+  (flycheck-check-syntax-automatically '(save mode-enabled)))
 
 (use-package flycheck-posframe
   :ensure t

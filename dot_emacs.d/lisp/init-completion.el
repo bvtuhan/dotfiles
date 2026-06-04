@@ -127,25 +127,5 @@
   (completion-category-overrides
    '((file (styles partial-completion)))))
 
-
-(use-package undo-fu
-  :after evil
-  :custom
-  (undo-limit 6710886400)
-  (undo-strong-limit 100663296)
-  (undo-outer-limit 1006632960))
-
-(use-package undo-fu-session
-  :after undo-fu
-  :init
-  (undo-fu-session-global-mode 1)
-  :custom
-  (undo-fu-session-incompatible-files
-   '("/COMMIT_EDITMSG\\'" "/git-rebase-todo\\'")))
-
-(use-package vundo
-  :custom
-  (vundo-compact-display t))
-
 (provide 'init-completion)
 ;;; init-completion.el ends here
