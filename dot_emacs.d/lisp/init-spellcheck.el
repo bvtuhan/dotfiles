@@ -60,7 +60,7 @@
    (LaTeX-mode . jinx-mode)
    (markdown-mode . jinx-mode)
    (gfm-mode . jinx-mode)
-   (jinx-mode . switch/eng))
+   (jinx-mode . switch-eng))
   :bind
   (("M-$" . jinx-correct))
   :config
