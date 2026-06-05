@@ -5,11 +5,16 @@
 ;;; Code:
 
 (use-package tramp
-  :ensure nil ;; built-in
-  :defer t ;; do not load it during startup
-  :config
-  (add-to-list 'tramp-remote-path 'tramp-own-remote-path)
-  (add-to-list 'tramp-remote-path "/home/debian/.cargo/bin"))
+  :ensure nil
+  :defer t
+  :init
+  (setq tramp-remote-path
+        (list 'tramp-own-remote-path
+              "/home/debian/.cargo/bin"
+              "/usr/local/bin"
+              "/usr/bin"
+              "/bin"))
+  (setq tramp-use-ssh-controlmaster-options nil))
 
 
 ;; keybindings are defined in `init-general.el'
