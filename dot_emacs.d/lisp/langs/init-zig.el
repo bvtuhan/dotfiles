@@ -1,11 +1,14 @@
-;;; init-zig.el --- Zig setup -*- lexical-binding: t -*-
+;;; init-zig.el --- Description -*- lexical-binding: t; -*-
 
-(use-package zig-ts-mode
-  :vc (:url "https://codeberg.org/meow_king/zig-ts-mode"
-            :rev :newest)
+;;; Commentary:
+
+;;; Code:
+
+(use-package zig-mode
+  :ensure t
   :config
-  ;; You could also use :mode here.
-  (add-to-list 'auto-mode-alist '("\\.zig\\'" . zig-ts-mode)))
+  (add-to-list 'auto-mode-alist '("\\.\\(zig\\|zon\\)\\'" . zig-mode)))
+
 
 (provide 'init-zig)
 ;;; init-zig.el ends here

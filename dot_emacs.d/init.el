@@ -106,7 +106,6 @@
 (require 'init-org)
 (require 'init-remote)
 (require 'init-spellcheck)
-(require 'init-treesit)
 
 (when (eq system-type 'windows-nt)
   (require 'init-windows))

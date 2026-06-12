@@ -1,10 +1,5 @@
 ;;; init-rust.el --- Rust setup -*- lexical-binding: t -*-
 
-(use-package rust-mode
-  :ensure t
-  :init
-  (setq rust-mode-treesitter-derive t))
-
 ;; https://github.com/emacs-rustic/rustic#tree-sitter
 (use-package rustic
   :ensure t
