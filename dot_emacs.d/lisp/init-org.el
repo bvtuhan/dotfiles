@@ -59,17 +59,20 @@
         (plist-put org-format-latex-options :scale 1.5))
   (setq org-latex-listings 'minted
         org-latex-packages-alist '(("" "minted"))
+        org-latex-compiler "lualatex"
         org-latex-pdf-process
         '("latexmk -pdflua -interaction=nonstopmode -shell-escape -bibtex %f")
         org-cite-export-processors '((latex biblatex)))
   (unless (boundp 'org-latex-classes)
     (setq org-latex-classes nil))
+  ;;  Use these only if you are using pdfLaTeX to compile:
+  ;;  \\usepackage[utf8]{inputenc}
+  ;;  \\usepackage[T1]{fontenc}
   (add-to-list
    'org-latex-classes
    '("article"
      "\\documentclass[11pt,a4paper]{article}
-\\usepackage[utf8]{inputenc}
-\\usepackage[T1]{fontenc}
+\\usepackage{fontspec}
 \\usepackage[english]{babel}
 \\usepackage{fixltx2e}
 \\usepackage{graphicx}
@@ -84,7 +87,6 @@
 \\usepackage{wasysym}
 \\usepackage{amssymb}
 \\usepackage{hyperref}
-\\usepackage{mathpazo}
 \\usepackage{color}
 \\usepackage{enumerate}
 \\usepackage[inline]{enumitem}
