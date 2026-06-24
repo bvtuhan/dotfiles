@@ -92,7 +92,7 @@
   (dirvish-cache-dir (expand-file-name "dirvish/" user-emacs-directory))
   (dirvish-reuse-session 'open)
   (dirvish-attributes
-   '(nerd-icons file-time file-size collapse subtree-state vc-state git-msg))
+   '(nerd-icons file-time file-size collapse subtree-state vc-state))
   (dirvish-hide-details '(dirvish dirvish-side))
   (dirvish-hide-cursor '(dirvish dirvish-side))
   :config
