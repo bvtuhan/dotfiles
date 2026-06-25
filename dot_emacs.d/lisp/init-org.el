@@ -46,6 +46,15 @@
   (define-key org-mode-map (kbd "C-c p") #'fragtog/render-all)
   (require 'org-tempo)
   (require 'oc-csl)
+
+  (setq org-preview-latex-default-process 'dvisvgm)
+  (setq org-format-latex-header
+        "\\documentclass{article}
+        \\usepackage[usenames]{color}
+        \\usepackage{amsmath}
+        \\usepackage{amssymb}
+        \\pagestyle{empty}")
+
   (setq org-agenda-span 10
         org-return-follows-link t
         org-src-tab-acts-natively t
@@ -59,8 +68,10 @@
         (plist-put org-format-latex-options :scale 1.5))
   (setq org-latex-listings 'minted
         org-latex-packages-alist '(("" "minted"))
-        org-latex-compiler "lualatex"
-        org-latex-pdf-process
+        ;; do not set the global compiler to LuaLaTeX
+        ;; as this makes org-fragtog to crash
+        ;; org-latex-compiler "lualatex"
+        org-latex-pdf-procesos
         '("latexmk -pdflua -interaction=nonstopmode -shell-escape -bibtex %f")
         org-cite-export-processors '((latex biblatex)))
   (unless (boundp 'org-latex-classes)
@@ -70,7 +81,7 @@
   ;;  \\usepackage[T1]{fontenc}
   (add-to-list
    'org-latex-classes
-   '("article"
+   '("lua-article"
      "\\documentclass[11pt,a4paper]{article}
 \\usepackage{fontspec}
 \\usepackage[english]{babel}
