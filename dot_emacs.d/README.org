@@ -2,6 +2,16 @@
 #+author:    bvtuhan
 #+email:     jjackson.stormm@gmail.com
 
+** To Upgrade Packages
+
+```
+M-x package-refresh-contents RET
+M-x list-packages RET
+M-x package-menu-mark-upgrades RET
+M-x package-menu-execute RET
+M-x package-autoremove RET
+```
+
 ** Windows Installation
 
 *** Post-Installation
