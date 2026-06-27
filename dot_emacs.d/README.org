@@ -4,13 +4,13 @@
 
 ** To Upgrade Packages
 
-```
+#+BEGIN_SRC elisp
 M-x package-refresh-contents RET
 M-x list-packages RET
 M-x package-menu-mark-upgrades RET
 M-x package-menu-execute RET
 M-x package-autoremove RET
-```
+#+END_SRC
 
 ** Windows Installation
 
