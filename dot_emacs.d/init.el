@@ -100,6 +100,9 @@
  ;; If there is more than one, they won't work right.
  )
 
+(with-eval-after-load 'project
+  (add-to-list 'project-vc-extra-root-markers "Cargo.toml"))
+
 (require 'init-completion)
 (require 'init-dape)
 (require 'init-dired)
