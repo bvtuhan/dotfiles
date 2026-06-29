@@ -64,14 +64,13 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(ace-window adaptive-wrap apheleia cape cider clojure-ts-mode copilot
+   '(ace-window adaptive-wrap apheleia cape cider clojure-ts-mode consult copilot
                 corfu-terminal crdt dape diredfl dirvish doom-modeline
-                embark-consult evil-collection evil-commentary evil-goggles
-                evil-numbers evil-org evil-surround evil-tex flycheck-eglot
+                evil-collection evil-goggles evil-org evil-tex flycheck-eglot
                 flycheck-posframe general hl-todo jinx marginalia orderless
-                org-download org-fragtog org-noter pdf-tools rustic sly
-                treesit-auto undo-fu undo-fu-session vertico vundo
-                yasnippet-snippets yellowbeans-theme zig-ts-mode))
+                org-download org-fragtog org-noter pdf-tools rustic sly undo-fu
+                undo-fu-session vertico yasnippet-snippets yellowbeans-theme
+                zig-mode))
  '(package-vc-selected-packages
    '((dirvish :url "https://github.com/latiagertrutis/dirvish" :rev :newest
               :lisp-dir ".")

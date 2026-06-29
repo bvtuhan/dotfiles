@@ -14,11 +14,13 @@
 ;;      (add-to-list 'auto-mode-alist '("\\.zig\\'" . zig-ts-mode)))
 
 (add-to-list 'load-path (expand-file-name "lisp/langs" user-emacs-directory))
+
 (require 'init-markdown)
 (require 'init-rust)
 (require 'init-elisp)
 (require 'init-common-lisp)
 (require 'init-tex)
+(require 'init-zig)
 
 (provide 'init-langs)
 ;;; init-langs.el ends here
