@@ -16,7 +16,11 @@
   :ensure t
   :after flycheck
   :hook
-  (flycheck-mode . flycheck-posframe-mode))
+  (flycheck-mode . flycheck-posframe-mode)
+  :config
+  (with-eval-after-load 'evil
+    (evil-define-key 'normal flycheck-mode-map
+      (kbd "g h") #'flycheck-display-error-at-point)))
 
 (use-package flycheck-eglot
   :ensure t
