@@ -45,6 +45,9 @@
     "K"  #'eldoc-doc-buffer)
 
   (general-define-key
+
+   "C-=" #'text-scale-increase
+   "C--" #'text-scale-decrease
    "M-m" 'shell-command
    "C-/" 'comment-dwim)
 
