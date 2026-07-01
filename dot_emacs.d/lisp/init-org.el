@@ -11,6 +11,10 @@
          (org-mode . hl-todo-mode)
          (org-mode . visual-line-mode))
 
+
+  :bind
+  (("C-c l" . 'org-store-link))
+
   :custom
   (org-directory "~/org/")
   (org-agenda-files '("~/org/"))
