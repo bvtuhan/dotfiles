@@ -72,10 +72,11 @@
         (plist-put org-format-latex-options :scale 1.5))
   (setq org-latex-listings 'minted
         org-latex-packages-alist '(("" "minted"))
+        org-latex-src-block-backend 'minted
         ;; do not set the global compiler to LuaLaTeX
         ;; as this makes org-fragtog to crash
         ;; org-latex-compiler "lualatex"
-        org-latex-pdf-procesos
+        org-latex-pdf-process
         '("latexmk -pdflua -interaction=nonstopmode -shell-escape -bibtex %f")
         org-cite-export-processors '((latex biblatex)))
   (unless (boundp 'org-latex-classes)
