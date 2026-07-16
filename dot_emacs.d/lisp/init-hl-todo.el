@@ -13,7 +13,6 @@
           ("FIXME" error bold)
           ("HACK" font-lock-constant-face bold)
           ("REVIEW" font-lock-keyword-face bold)
-          ("NOT-SURE" font-lock-keyword-face bold)
           ("NOTSURE" font-lock-keyword-face bold)
           ("NOTE" success bold)
           ("SOLUTION" success bold)
