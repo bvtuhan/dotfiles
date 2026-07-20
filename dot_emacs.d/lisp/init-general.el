@@ -68,8 +68,15 @@
     (interactive "DSearch directory: ")
     (consult-ripgrep directory))
 
+  (defun custom/switch-to-scratch-buffer ()
+    (interactive)
+    (split-window-right)
+    (other-window 1)
+    (switch-to-buffer "*scratch*"))
+
   (my/leader-keys
-    "SPC" '(custom/open-eshell-horizontal :which-key "Open eshell in a vertical window")
+    "SPC" '(custom/open-eshell-horizontal :which-key "Open eshell in a vertical window") ;; cargo-cult for me
+    "x"   '(custom/switch-to-scratch-buffer :which-key "Open scratch buffer")
     "."   '(find-file :which-key "Find file")
     ","   '(consult-buffer :which-key "Switch buffer")
     "/"   '(custom/consult-ripgrep-directory :which-key "Search directory")
