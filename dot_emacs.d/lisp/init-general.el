@@ -64,12 +64,16 @@
     (other-window 1)
     (eshell))
 
+  (defun custom/consult-ripgrep-directory (directory)
+    (interactive "DSearch directory: ")
+    (consult-ripgrep directory))
+
   (my/leader-keys
     "SPC" '(custom/open-eshell-horizontal :which-key "Open eshell in a vertical window")
     "."   '(find-file :which-key "Find file")
     ","   '(consult-buffer :which-key "Switch buffer")
-    ":"   '(execute-extended-command :which-key "M-x")
-    "/"   '(consult-ripgrep :which-key "Fuzzy search")
+    "/"   '(custom/consult-ripgrep-directory :which-key "Search directory")
+    ":"   '(consult-ripgrep :which-key "Fuzzy search")
 
     "s"   '(:ignore t :which-key "search")
     "ss" '(consult-line :which-key "Search current buffer")
