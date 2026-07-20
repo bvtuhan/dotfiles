@@ -59,7 +59,7 @@ output * bg ./freckles-lights.jpg fill
 # Read `man 5 sway-input` for more information about this section.
 
 input * {
-    xkb_options "caps:escape"
+    xkb_options "caps:escape,compose:ralt"
 }
 
 # Display configuration
