@@ -10,7 +10,10 @@
         ("M-N" . flycheck-previous-error)
         ("C-c C-c" . flycheck-list-errors))
   :custom
-  (flycheck-check-syntax-automatically '(save mode-enabled)))
+  (flycheck-check-syntax-automatically '(save mode-enabled))
+  :config
+  (global-flycheck-lsp-mode 1) ;; let's test this new feature
+  (global-flycheck-eglot-mode 1))
 
 (use-package flycheck-posframe
   :ensure t
@@ -21,11 +24,6 @@
   (with-eval-after-load 'evil
     (evil-define-key 'normal flycheck-mode-map
       (kbd "g h") #'flycheck-display-error-at-point)))
-
-(use-package flycheck-eglot
-  :ensure t
-  :after (flycheck eglot)
-  :hook (eglot-managed-mode . flycheck-eglot-mode))
 
 (provide 'init-flycheck)
 ;;; init-flycheck.el ends here
