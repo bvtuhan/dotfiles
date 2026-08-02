@@ -63,17 +63,11 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(ace-window adaptive-wrap apheleia cape cider clojure-ts-mode consult copilot
-                corfu-terminal crdt dape diredfl dirvish doom-modeline
-                evil-collection evil-goggles evil-org evil-tex flycheck-eglot
-                flycheck-posframe general hl-todo jinx marginalia orderless
-                org-download org-fragtog org-noter pdf-tools rustic sly undo-fu
-                undo-fu-session vertico yasnippet-snippets yellowbeans-theme
-                zig-mode))
+ '(package-selected-packages nil)
  '(package-vc-selected-packages
-   '((dirvish :url "https://github.com/latiagertrutis/dirvish" :rev :newest
-              :lisp-dir ".")
+   '((edraw :url "https://github.com/misohena/el-easydraw")
+     (dirvish :url "https://github.com/latiagertrutis/dirvish" :rev
+              :newest :lisp-dir ".")
      (yellowbeans-theme :url
                         "https://github.com/bvtuhan/yellowbeans-theme-emacs"))))
 
@@ -107,6 +101,7 @@
 (require 'init-dired)
 (require 'init-doom-modeline)
 (require 'init-eglot)
+;; (require 'init-lsp-mode)
 (require 'init-evil)
 (require 'init-flycheck)
 (require 'init-general)
