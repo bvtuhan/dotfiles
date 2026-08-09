@@ -31,36 +31,31 @@
 ;; custom dictionaries defined above.
 ;; sudo pacman -S hunspell-en_us
 (defun switch-eng ()
-  "Enable English spellchecking."
+  "Switch spell checking and completion to English."
   (interactive)
-  (setq-local jinx-languages "en_US")
   (setq-local ispell-complete-word-dict custom/en-wordlist)
-  (when (bound-and-true-p jinx-mode)
-    (jinx--load-dicts)
-    (jinx--cleanup))
+  (jinx-languages "en_US")
   (message "Welcome"))
 
 ;; sudo pacman -S hunspell-de
 (defun switch-ger ()
-  "Enable German spellchecking."
+  "Switch spell checking and completion to German."
   (interactive)
-  (setq-local jinx-languages "de_DE")
   (setq-local ispell-complete-word-dict custom/de-wordlist)
-  (when (bound-and-true-p jinx-mode)
-    (jinx--load-dicts)
-    (jinx--cleanup))
+  (jinx-languages "de_DE")
   (message "Willkommen"))
 
 (use-package jinx
   :ensure t
+  :custom
+  (jinx-languages "en_US")
   :hook
   ((prog-mode . jinx-mode)
    (org-mode . jinx-mode)
    (latex-mode . jinx-mode)
    (LaTeX-mode . jinx-mode)
    (markdown-mode . jinx-mode)
-   (gfm-mode . jinx-mode)
-   (jinx-mode . switch-eng))
+   (gfm-mode . jinx-mode))
   :bind
   (("M-$" . jinx-correct))
   :config

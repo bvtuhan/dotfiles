@@ -21,6 +21,7 @@
 (require 'init-common-lisp)
 (require 'init-tex)
 (require 'init-zig)
+(require 'init-hdl)
 
 (provide 'init-langs)
 ;;; init-langs.el ends here
