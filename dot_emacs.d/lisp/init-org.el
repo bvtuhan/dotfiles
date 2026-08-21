@@ -29,7 +29,7 @@
   (org-startup-folded nil)
   (org-tags-column 0)
   (org-image-actual-width nil)
-  (org-pretty-entities t)
+  ;; (org-pretty-entities t) ok, this is shit
   (org-refile-targets '((nil :maxlevel . 3)
                         (org-agenda-files :maxlevel . 3)))
   (org-refile-use-outline-path 'file)
