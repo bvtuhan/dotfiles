@@ -10,7 +10,9 @@
         ("M-N" . flycheck-previous-error)
         ("C-c C-c" . flycheck-list-errors))
   :custom
-  (flycheck-check-syntax-automatically '(save mode-enabled)))
+  (flycheck-check-syntax-automatically '(save mode-enabled))
+  :config
+  (global-flycheck-eglot-mode 1))
 
 (use-package flycheck-posframe
   :ensure t
