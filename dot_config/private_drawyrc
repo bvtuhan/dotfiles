@@ -1,0 +1,13 @@
+[Properties]
+FontSize=19
+
+[Session]
+LastSavedFile=
+LastSavedFileModified=false
+
+[Shortcuts]
+switch_to_line_tool=C
+switch_to_move_tool=V
+
+[UiSettings]
+ColorScheme=BreezeDark
