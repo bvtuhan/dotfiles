@@ -197,5 +197,17 @@
     (require 'edraw-org)
     (edraw-org-setup-exporter)))
 
+(use-package org-draw
+  :vc (:url "https://github.com/larrasket/org-draw")
+  :commands (org-draw org-draw-edit org-draw-setup)
+  :bind (:map org-mode-map
+              ("C-c d d" . org-draw)
+              ("C-c d e" . org-draw-edit)
+              ("C-c d s" . org-draw-setup))
+  :config
+  ;; (setq org-draw-require-pairing 1)
+  (setq org-draw-directory "images"))
+
+
 (provide 'init-org)
 ;;; init-org.el ends here
