@@ -33,9 +33,16 @@
       (let* ((file-name (file-name-nondirectory buffer-file-name))
              (title (my/title-from-file-name file-name)))
         (insert
-         "#+title: " title "\n"
-         "#+author:    bvtuhan\n"
-         "#+email:     jjackson.stormm@gmail.com\n"))))
+         "#+TITLE: " title "\n"
+         "#+AUTHOR:    bvtuhan\n"
+         "#+EMAIL:     jjackson.stormm@gmail.com\n"
+         "#+DESCRIPTION: \n"
+         ;; "#+DATE: {{{time(%Y-%m-%d)}}}\n" Hugo does not support dynamic date insertion
+         "#+DRAFT: false\n"
+         "#+TAGS[]: \n"
+         "#+CATEGORIES[]: \n"
+         "#+WEIGHT: 10\n"
+         "#+SLUG: \n"))))
 
   (define-auto-insert
     "\\.el\\'"

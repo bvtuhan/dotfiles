@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: caution block
+# key: caution
+# --
+#+BEGIN_CAUTION
+$1
+#+END_CAUTION

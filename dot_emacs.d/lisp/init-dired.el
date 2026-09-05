@@ -70,6 +70,7 @@
     (setq nerd-icons-color-icons nil)))
 
 ;; please rm -rf ~/.emacs.d/elpa/dirvish first
+;; main upstream is back
 (use-package dirvish
   :custom
   (dirvish-cache-dir (expand-file-name "dirvish/" user-emacs-directory))

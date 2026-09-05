@@ -18,3 +18,7 @@ alias sleep='sudo systemctl sleep'
 alias suspend='sudo systemctl suspend'
 alias geforcenow='flatpak run com.nvidia.geforcenow'
 functions -e wget
+
+
+# Added by Antigravity CLI installer
+set -gx PATH "/home/batuhan/.local/bin" $PATH
