@@ -69,25 +69,8 @@
   (unless (display-graphic-p)
     (setq nerd-icons-color-icons nil)))
 
-(unless (package-installed-p 'dirvish)
-  (package-vc-install
-   '(dirvish
-     :url "https://github.com/latiagertrutis/dirvish"
-     :rev :newest
-     :lisp-dir ".")))
-
-;; we need this for dirvish
-(eval-and-compile
-  (let* ((dirvish-dir (expand-file-name "dirvish" package-user-dir))
-         (ext-dir (expand-file-name "extensions" dirvish-dir)))
-    (add-to-list 'load-path dirvish-dir)
-    (add-to-list 'load-path ext-dir)))
-
 ;; please rm -rf ~/.emacs.d/elpa/dirvish first
 (use-package dirvish
-  ;; main upstream is dead
-  :vc (:url "https://github.com/latiagertrutis/dirvish"
-            :rev :newest)
   :custom
   (dirvish-cache-dir (expand-file-name "dirvish/" user-emacs-directory))
   (dirvish-reuse-session 'open)
