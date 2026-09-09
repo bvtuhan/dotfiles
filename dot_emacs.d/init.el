@@ -65,11 +65,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages nil)
  '(package-vc-selected-packages
-   '((org-draw :url "https://github.com/larrasket/org-draw")
-     (edraw :url "https://github.com/misohena/el-easydraw")
-     (dirvish :url "https://github.com/latiagertrutis/dirvish" :rev
-              :newest :lisp-dir ".")
-     (yellowbeans-theme :url
+   '((yellowbeans-theme :url
                         "https://github.com/bvtuhan/yellowbeans-theme-emacs"))))
 
 ;; theme

@@ -184,19 +184,6 @@
     (evil-define-key 'normal pdf-view-mode-map
       (kbd "i") #'org-noter-insert-note)))
 
-(use-package edraw
-  :vc (:url "https://github.com/misohena/el-easydraw")
-  :ensure t
-  :defer t
-  :commands (edraw-mode)
-  :config
-  (with-eval-after-load 'org
-    (require 'edraw-org)
-    (edraw-org-setup-default))
-  (with-eval-after-load "ox"
-    (require 'edraw-org)
-    (edraw-org-setup-exporter)))
-
 (use-package org-draw
   :commands (org-draw org-draw-edit org-draw-setup)
   :bind (:map org-mode-map
