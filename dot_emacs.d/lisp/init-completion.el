@@ -108,17 +108,47 @@
   (eshell-scroll-to-bottom-on-input t)
   (eshell-kill-processes-on-exit t))
 
+;;             UI
+;;              │
+;;            Corfu
+;;              │
+;;              ▼
+;; completion-at-point-functions
+;;              │
+;;    ┌─────────┼──────────┐
+;;    ▼         ▼          ▼
+;;  Eglot    cape-file  cape-dabbrev
+;;    │
+;;    ▼
+;;   LSP
 ;; completion-at-point-functions
 (use-package cape
+  :custom
+  (cape-dabbrev-buffer-function #'current-buffer)
   :init
-  (defun custom/latex-setup ()
-    (add-hook 'completion-at-point-functions #'cape-file t t)
-    (add-hook 'completion-at-point-functions #'cape-tex t t))
+  (defun custom/latex-completion-setup ()
+    (add-hook 'completion-at-point-functions #'cape-file 80 t)
+    (add-hook 'completion-at-point-functions #'cape-tex 90 t))
+
   (defun custom/prog-completion-setup ()
-    (add-hook 'completion-at-point-functions #'cape-file t t)
-    (add-hook 'completion-at-point-functions #'cape-dabbrev t t))
-  (add-hook 'LaTeX-mode-hook #'custom/latex-setup)
-  (add-hook 'prog-mode-hook #'custom/prog-completion-setup))
+    (add-hook 'completion-at-point-functions #'cape-file 80 t)
+    (add-hook 'completion-at-point-functions #'cape-dabbrev 90 t))
+
+  (defun custom/sly-completion-setup ()
+    (setq-local completion-at-point-functions
+                (list
+                 #'sly-complete-filename-maybe
+                 (cape-capf-super
+                  #'sly-complete-symbol
+                  #'cape-dabbrev))))
+
+  (add-hook 'LaTeX-mode-hook #'custom/latex-completion-setup)
+  (add-hook 'prog-mode-hook #'custom/prog-completion-setup)
+  (add-hook 'sly-mode-hook #'custom/sly-completion-setup t)
+  :config
+  (with-eval-after-load 'eglot
+    (advice-add #'eglot-completion-at-point
+                :around #'cape-wrap-nonexclusive)))
 
 (use-package orderless
   :custom

@@ -4,11 +4,6 @@
   :ensure t
   :hook
   (prog-mode . flycheck-mode)
-  :bind
-  (:map flycheck-mode-map
-        ("M-n" . flycheck-next-error)
-        ("M-N" . flycheck-previous-error)
-        ("C-c C-c" . flycheck-list-errors))
   :custom
   (flycheck-check-syntax-automatically '(save mode-enabled))
   :config
