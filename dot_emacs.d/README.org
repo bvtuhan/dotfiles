@@ -1,4 +1,4 @@
-#+title: Readme
+#+title: README
 #+author:    bvtuhan
 #+email:     jjackson.stormm@gmail.com
 
