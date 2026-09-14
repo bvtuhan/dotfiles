@@ -184,5 +184,13 @@
     (evil-define-key 'normal pdf-view-mode-map
       (kbd "i") #'org-noter-insert-note)))
 
+(use-package uniline
+  :ensure t
+  :after org
+  :bind
+  ("C-c u" . uniline-mode)
+  :init
+  (setq uniline-key-insert '("C-;")))
+
 (provide 'init-org)
 ;;; init-org.el ends here
