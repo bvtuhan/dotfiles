@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+name="$1"
+
+if [[ -z "$name" ]]; then
+    echo "Usage: org-new <file-name>"
+    exit 1
+fi
+
+date=$(date +"%Y-%m-%d")
+file="${date}-${name}.org"
+
+touch "$file"
+
+echo "Created: $file"
