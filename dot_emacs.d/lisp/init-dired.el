@@ -45,9 +45,9 @@
                 "\\|\\(?:\\.js\\)?\\.meta\\'"
                 "\\|\\.\\(?:elc\\|o\\|pyo\\|swp\\|class\\)\\'"))
 
-  (when-let ((open-cmd (cond ((eq system-type 'darwin) "open")
-                             ((eq system-type 'gnu/linux) "xdg-open")
-                             ((eq system-type 'windows-nt) "start"))))
+  (when-let* ((open-cmd (cond ((eq system-type 'darwin) "open")
+                              ((eq system-type 'gnu/linux) "xdg-open")
+                              ((eq system-type 'windows-nt) "start"))))
     (setq dired-guess-shell-alist-user
           `(( "\\.\\(?:docx\\|pdf\\|djvu\\|eps\\)\\'" ,open-cmd)
             ( "\\.\\(?:jpe?g\\|png\\|gif\\|xpm\\)\\'" ,open-cmd)
