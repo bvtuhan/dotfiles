@@ -4,6 +4,7 @@
 
 ;;; Code:
 
+;; Use M-n (sbl-next-note for diagnostic)
 (use-package sly
   :ensure t
   :hook ((lisp-mode . sly-editing-mode)

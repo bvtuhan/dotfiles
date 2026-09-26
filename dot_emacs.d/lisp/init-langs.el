@@ -17,11 +17,10 @@
 
 (require 'init-markdown)
 (require 'init-rust)
-(require 'init-elisp)
-(require 'init-common-lisp)
 (require 'init-tex)
 (require 'init-zig)
 (require 'init-hdl)
+(require 'init-lisp)
 
 (provide 'init-langs)
 ;;; init-langs.el ends here

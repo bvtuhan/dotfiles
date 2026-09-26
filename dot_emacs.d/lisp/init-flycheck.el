@@ -4,6 +4,9 @@
   :ensure t
   :hook
   (prog-mode . flycheck-mode)
+  :bind
+  (("M-n" . 'flycheck-next-error) ;; this is overwritten by syl
+   ("M-N" . 'flycheck-previous-error))
   :custom
   (flycheck-check-syntax-automatically '(save mode-enabled))
   :config
