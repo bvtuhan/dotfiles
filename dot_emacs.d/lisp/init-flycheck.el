@@ -6,7 +6,7 @@
   (prog-mode . flycheck-mode)
   :bind
   (("M-n" . 'flycheck-next-error) ;; this is overwritten by syl
-   ("M-p" . 'flycheck-previous-error))
+   ("M-N" . 'flycheck-previous-error))
   :custom
   (flycheck-check-syntax-automatically '(save mode-enabled))
   :config

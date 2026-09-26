@@ -11,6 +11,8 @@
          (sly-mode . (lambda ()
                        (unless (sly-connected-p)
                          (sly)))))
+  :bind
+  (("M-N" . 'sly-previous-note))
   :custom
   (inferior-lisp-program "sbcl")
   (sly-auto-start 'always)
