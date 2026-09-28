@@ -83,6 +83,18 @@
   :init
   (global-corfu-mode 1))
 
+;; supress the look message log
+(use-package ispell
+  :ensure nil
+  :config
+  (advice-add
+   #'ispell-lookup-words
+   :around
+   (lambda (orig-fun &rest args)
+     (let ((inhibit-message t)
+           (message-log-max nil))
+       (apply orig-fun args)))))
+
 (use-package corfu-popupinfo
   :after corfu
   :ensure nil
