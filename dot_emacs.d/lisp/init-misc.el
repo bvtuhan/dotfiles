@@ -42,7 +42,10 @@
          "#+TAGS[]: \n"
          "#+CATEGORIES[]: \n"
          "#+WEIGHT: 10\n"
-         "#+SLUG: \n"))))
+         "#+SLUG: \n"
+         "#+bibliography: references.bib\n\n\n"
+         "* References\n"
+         "#+print_bibliography:"))))
 
   (define-auto-insert
     "\\.el\\'"

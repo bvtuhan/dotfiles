@@ -1,0 +1,21 @@
+# -*- mode: snippet -*-
+# name: org header
+# key: header
+# condition: t
+# --
+#+TITLE:     ${1:Title}
+#+AUTHOR:    bvtuhan
+#+EMAIL:     jjackson.stormm@gmail.com
+#+DESCRIPTION: ${2:Description}
+#+DRAFT: false
+#+TAGS[]:
+#+CATEGORIES[]:
+#+WEIGHT: 10
+#+SLUG:
+#+bibliography: references.bib
+
+$0
+
+* References
+
+#+print_bibliography:

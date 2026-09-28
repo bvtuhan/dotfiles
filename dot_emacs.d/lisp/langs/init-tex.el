@@ -64,5 +64,17 @@
   :defer t
   :hook (LaTeX-mode . evil-tex-mode))
 
+(use-package citar
+  :ensure t
+  :hook
+  ((org-mode . citar-capf-setup)
+   (LaTeX-mode . citar-capf-setup))
+  :custom
+  (org-cite-insert-processor 'citar)
+  (org-cite-follow-processor 'citar)
+  (org-cite-activate-processor 'citar)
+  :config
+  (add-to-list 'savehist-additional-variables 'citar-history))
+
 (provide 'init-tex)
 ;;; init-tex.el ends here
