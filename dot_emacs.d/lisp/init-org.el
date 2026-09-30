@@ -13,7 +13,8 @@
 
 
   :bind
-  (("C-c l" . 'org-store-link))
+  (:map org-mode-map
+        ("C-c l" . org-store-link))
 
   :custom
   (org-directory "~/org/")
