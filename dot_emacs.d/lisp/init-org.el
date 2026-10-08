@@ -10,12 +10,9 @@
   :hook ((org-mode . my/org-setup-auto-fill)
          (org-mode . hl-todo-mode)
          (org-mode . visual-line-mode))
-
-
   :bind
   (:map org-mode-map
         ("C-c l" . org-store-link))
-
   :custom
   (org-directory "~/org/")
   (org-agenda-files '("~/org/"))

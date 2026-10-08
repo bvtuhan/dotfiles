@@ -133,5 +133,36 @@
   :custom
   (auto-revert-verbose nil))
 
+(use-package dired-subtree
+  :ensure t
+  :commands (dired-subtree-toggle dired-subtree-cycle)
+  :config
+  (setq dired-subtree-line-prefix " ")
+  (setq dired-subtree-use-backgrounds nil))
+
+(use-package dired-sidebar
+  :ensure t
+  :bind (("C-x C-n" . dired-sidebar-toggle-sidebar))
+  :commands (dired-sidebar-toggle-sidebar
+             dired-sidebar-show-sidebar)
+  :init
+  (add-hook 'dired-sidebar-mode-hook
+            (lambda ()
+              (unless (file-remote-p default-directory)
+                (auto-revert-mode 1))))
+  :config
+  (push 'toggle-window-split dired-sidebar-toggle-hidden-commands)
+  (push 'rotate-windows dired-sidebar-toggle-hidden-commands)
+
+  (setq dired-sidebar-subtree-line-prefix "__"
+        dired-sidebar-use-term-integration nil
+        dired-sidebar-use-custom-font t)
+
+  (with-eval-after-load 'evil
+    (evil-define-key 'normal dired-sidebar-mode-map
+      "l" 'dired-sidebar-find-file
+      "h" 'dired-sidebar-up-directory
+      (kbd "RET") 'dired-sidebar-find-file)))
+
 (provide 'init-dired)
 ;;; init-dired.el ends here

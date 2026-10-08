@@ -64,14 +64,15 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(ace-window adaptive-wrap apheleia cape cider citar clojure-ts-mode
-                consult copilot corfu-terminal crdt dape diredfl
-                dirvish doom-modeline edraw evil-collection
-                evil-goggles evil-org evil-tex flycheck-eglot
-                flycheck-posframe general hl-todo jinx marginalia
-                orderless org-download org-fragtog org-noter pdf-tools
-                rustic sly undo-fu undo-fu-session uniline vertico
-                vhdl-ext yasnippet-snippets yellowbeans-theme zig-mode))
+   '(ace-window adaptive-wrap apheleia cape centaur-tabs cider citar
+                clojure-ts-mode consult copilot corfu-terminal crdt
+                dape dired-sidebar dired-subtree diredfl dirvish
+                doom-modeline edraw evil-collection evil-goggles
+                evil-org evil-tex flycheck-eglot flycheck-posframe
+                general hl-todo jinx marginalia orderless org-download
+                org-fragtog org-noter pdf-tools rustic sly undo-fu
+                undo-fu-session uniline vertico vhdl-ext
+                yasnippet-snippets yellowbeans-theme zig-mode))
  '(package-vc-selected-packages
    '((yellowbeans-theme :url
                         "https://github.com/bvtuhan/yellowbeans-theme-emacs"))))

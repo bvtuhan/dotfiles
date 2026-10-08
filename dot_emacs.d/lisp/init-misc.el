@@ -84,5 +84,22 @@
         pdf-view-use-imagemagick nil)
   (pdf-tools-install :no-query))
 
+(use-package centaur-tabs
+  :ensure t
+  :demand t
+  :config
+  (setq centaur-tabs-style "bar"
+        centaur-tabs-height 32
+        centaur-tabs-set-icons t
+        centaur-tabs-set-modified-marker t
+        centaur-tabs-show-navigation-buttons t)
+  (centaur-tabs-mode t)
+  :hook
+  (dired-sidebar-mode . centaur-tabs-local-mode)
+  :bind
+  (:map evil-window-map
+        ("h" . centaur-tabs-backward)
+        ("l" . centaur-tabs-forward)))
+
 (provide 'init-misc)
 ;;; init-misc.el ends here
