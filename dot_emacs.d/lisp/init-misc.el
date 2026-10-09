@@ -66,10 +66,11 @@
 (add-hook 'before-save-hook #'delete-trailing-whitespace)
 (use-package apheleia
   :ensure t
+  :init
+  (add-hook 'after-init-hook #'apheleia-global-mode)
   :config
   (setf (alist-get 'clang-format apheleia-formatters)
         '("clang-format" "--style={BasedOnStyle: LLVM, IndentWidth: 4, TabWidth: 4, UseTab: Never}"))
-  (apheleia-global-mode +1)
   (add-hook 'TeX-mode-hook (lambda () (apheleia-mode -1)))
   (add-hook 'LaTeX-mode-hook (lambda () (apheleia-mode -1))))
 

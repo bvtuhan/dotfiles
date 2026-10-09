@@ -24,14 +24,12 @@
           0)
         doom-modeline-icon nil)
   :config
-  (setq find-file-visit-truename t)
   (setq inhibit-compacting-font-caches t)
-  (defvar mouse-wheel-down-event nil)
-  (defvar mouse-wheel-up-event nil)
   (add-to-list 'doom-modeline-mode-alist '(dashboard-mode . dashboard))
   (doom-modeline-def-modeline 'my-line
     '(bar modals matches buffer-info buffer-position selection-info)
-    '(buffer-encoding lsp major-mode process vcs check)))
+    '(buffer-encoding lsp major-mode process vcs check))
+  (doom-modeline-set-modeline 'my-line 'default))
 
 (provide 'init-doom-modeline)
 ;;; init-doom-modeline.el ends here

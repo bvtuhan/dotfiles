@@ -6,6 +6,7 @@
 
 (use-package vhdl-mode
   :ensure nil
+  :defer t
   :custom
   (vhdl-modify-date-on-saving nil))
 

@@ -41,10 +41,9 @@
 (use-package undo-fu
   :after evil
   :config
-  (setq undo-limit 6710886400 ;; 64mb.
+  (setq undo-limit 67108864 ;; 64mb.
         undo-strong-limit 100663296 ;; 96mb.
-        undo-outer-limit 1006632960) ;; 960mb.
-  )
+        undo-outer-limit 1006632960)) ;; 960mb.
 
 (use-package undo-fu-session
   :after undo-fu

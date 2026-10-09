@@ -42,6 +42,7 @@
     :states 'motion
     "gr" #'xref-find-references
     "gd" #'xref-find-definitions
+    "gi" #'eglot-find-implementation
     "K"  #'eldoc-doc-buffer)
 
   (general-define-key
@@ -68,11 +69,25 @@
     (interactive "DSearch directory: ")
     (consult-ripgrep directory))
 
+  (defun revert-buffer-no-confirm ()
+    "Revert the current buffer without confirmation."
+    (interactive)
+    (revert-buffer :ignore-auto :noconfirm))
+
+  (defun kill-other-buffers ()
+    "Kill all other buffers except the current buffer."
+    (interactive)
+    (let ((current (current-buffer)))
+      (dolist (buf (buffer-list))
+        (unless (or (eq buf current)
+                    (string-prefix-p " " (buffer-name buf)))
+          (kill-buffer buf)))))
+
   (defun custom/switch-to-scratch-buffer ()
     (interactive)
     (split-window-right)
     (other-window 1)
-    (switch-to-buffer "*scratch*"))
+    (switch-to-buffer (get-buffer-create "*scratch*")))
 
   (my/leader-keys
     "SPC" '(custom/open-eshell-horizontal :which-key "Open eshell in a vertical window") ;; cargo-cult for me
@@ -194,12 +209,25 @@
     "l]" '(crdt-goto-next-user :wk "next user's cursor")
     "l[" '(crdt-goto-prev-user :wk "previous user's cursor")
 
+    "c"   '(:ignore t :which-key "code")
+    "ca" '(eglot-code-actions :which-key "LSP execute code action")
+    "cr" '(eglot-rename :which-key "LSP rename")
+    "cf" '(eglot-format :which-key "Format buffer/region")
+    "cd" '(xref-find-definitions :which-key "Jump to definition")
+    "cD" '(xref-find-references :which-key "Jump to references")
+    "ci" '(eglot-find-implementation :which-key "Find implementations")
+    "ck" '(eldoc-doc-buffer :which-key "Jump to documentation")
+    "cc" '(compile :which-key "Compile")
+    "cC" '(recompile :which-key "Recompile")
+    "cw" '(delete-trailing-whitespace :which-key "Delete trailing whitespace")
+    "cx" '(flycheck-list-errors :which-key "List errors")
+
     "q" '(:ignore t :which-key "quit")
     "qq" '(save-buffers-kill-terminal :which-key "Quit Emacs"))
 
   (general-define-key
    :states 'motion
-   "?" '+consult-line
+   "?" #'consult-line
 
    ;; window management
    "C-w C-u" 'tab-bar-history-back

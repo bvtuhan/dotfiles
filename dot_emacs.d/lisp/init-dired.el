@@ -80,7 +80,6 @@
   (dirvish-hide-details '(dirvish dirvish-side))
   (dirvish-hide-cursor '(dirvish dirvish-side))
   :config
-  (require 'dirvish-yank)
   (dirvish-override-dired-mode)
   (general-define-key
    :states '(normal visual)

@@ -8,14 +8,15 @@
 (package-initialize)
 
 (unless package-archive-contents
-  (package-refresh-contents))
+  (unless (package-read-all-archive-contents)
+    (package-refresh-contents)))
 
 (require 'use-package)
 (setq use-package-always-ensure t)
 
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
-(require 'init-general) ; this must be loaded first
 (require 'init-evil)
+(require 'init-general)
 
 (menu-bar-mode -1)
 (tool-bar-mode -1)
@@ -36,17 +37,14 @@
 (setq display-line-numbers-type 'relative)
 
 (global-display-line-numbers-mode 1)
-(setq suggest-key-bindings nil)
-(setq native-comp-async-report-warnings-errors nil)
-(setq auto-save-default t)
-(setq select-enable-clipboard t)
-(setq echo-keystrokes 0.1)
-(setq read-process-output-max (* 1024 1024)
-      gc-cons-threshold 100000000)
-(setq native-comp-async-report-warnings-errors nil)
+(setq suggest-key-bindings nil
+      native-comp-async-report-warnings-errors nil
+      auto-save-default t
+      select-enable-clipboard t
+      echo-keystrokes 0.1
+      read-process-output-max (* 1024 1024)
+      ad-redefinition-action 'accept)
 (byte-compile-disable-warning 'obsolete)
-(setq ad-redefinition-action 'accept)
-(setq suggest-key-bindings nil)
 (save-place-mode 1)
 (global-auto-revert-mode 1)
 (setq ring-bell-function 'ignore)
@@ -107,9 +105,7 @@
 (require 'init-dired)
 (require 'init-doom-modeline)
 (require 'init-eglot)
-(require 'init-evil)
 (require 'init-flycheck)
-(require 'init-general)
 (require 'init-hl-todo)
 (require 'init-langs) ;; goto this file to enable/disable languages
 (require 'init-misc)

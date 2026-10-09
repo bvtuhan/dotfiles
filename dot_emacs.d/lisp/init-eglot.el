@@ -32,30 +32,7 @@
 
   ;; custom lsp binaries
   (add-to-list 'eglot-server-programs
-               '((zig-mode zig-ts-mode) . ("zls")))
-
-  (my/leader-keys
-    "c"   '(:ignore t :which-key "code")
-
-    "ca" '(eglot-code-actions :which-key "LSP execute code action")
-    "cr" '(eglot-rename :which-key "LSP rename")
-    "cf" '(eglot-format :which-key "Format buffer/region")
-
-    "cd" '(xref-find-definitions :which-key "Jump to definition")
-    "cD" '(xref-find-references :which-key "Jump to references")
-    "ci" '(eglot-find-implementation :which-key "Find implementations")
-    "ck" '(eldoc-doc-buffer :which-key "Jump to documentation")
-
-    "cc" '(compile :which-key "Compile")
-    "cC" '(recompile :which-key "Recompile")
-    "cw" '(delete-trailing-whitespace :which-key "Delete trailing whitespace")
-    "cx" '(flycheck-list-errors :which-key "List errors"))
-
-  (general-nmap
-    :states 'motion
-    "gr" #'xref-find-references
-    "gd" #'xref-find-definitions
-    "gi" #'eglot-find-implementation
-    "K"  #'eldoc-doc-buffer))
+               '((zig-mode zig-ts-mode) . ("zls"))))
 
 (provide 'init-eglot)
+;;; init-eglot.el ends here

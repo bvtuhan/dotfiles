@@ -13,7 +13,17 @@
                          (sly)))))
   :bind
   (:map sly-mode-map
-        ("M-N" . sly-previous-note))
+        ("M-n" . sly-next-note)
+        ("M-N" . sly-previous-note)
+        ("C-c C-z" . sly-mrepl)
+        ("C-c C-c" . sly-compile-defun)
+        ("C-c C-k" . sly-compile-and-load-file)
+        ("C-c C-e" . sly-eval-last-expression)
+        ("C-c C-r" . sly-eval-region)
+        ("C-c C-d d" . sly-describe-symbol)
+        ("C-c C-d a" . sly-arglist)
+        ("M-." . sly-edit-definition)
+        ("M-," . sly-pop-find-definition-stack))
   :custom
   (inferior-lisp-program "sbcl")
   (sly-auto-start 'always)
@@ -25,17 +35,6 @@
                      user-emacs-directory))
   (sly-mrepl-prevent-duplicate-history 'move)
   (sly-db-focus-debugger 'auto)
-  :bind
-  (:map sly-mode-map
-        ("C-c C-z" . sly-mrepl)
-        ("C-c C-c" . sly-compile-defun)
-        ("C-c C-k" . sly-compile-and-load-file)
-        ("C-c C-e" . sly-eval-last-expression)
-        ("C-c C-r" . sly-eval-region)
-        ("C-c C-d d" . sly-describe-symbol)
-        ("C-c C-d a" . sly-arglist)
-        ("M-." . sly-edit-definition)
-        ("M-," . sly-pop-find-definition-stack))
 
   :config
   (sly-symbol-completion-mode -1))

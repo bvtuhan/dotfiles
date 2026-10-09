@@ -33,8 +33,8 @@
 
 
 (use-package yasnippet
-  :init
-  (yas-global-mode 1))
+  :defer t
+  :hook ((prog-mode text-mode conf-mode) . yas-minor-mode))
 
 (use-package yasnippet-snippets
   :after yasnippet)
@@ -42,10 +42,10 @@
 (use-package vertico
   :init
   (vertico-mode 1)
-  :general
-  (:keymaps 'vertico-map
-            "C-j" #'vertico-next
-            "C-k" #'vertico-previous)
+  :bind
+  (:map vertico-map
+        ("C-j" . vertico-next)
+        ("C-k" . vertico-previous))
   :custom
   (vertico-resize nil)
   (vertico-count 17)
@@ -106,7 +106,7 @@
   (corfu-popupinfo-mode))
 
 (use-package corfu-terminal
-  :if (not (display-graphic-p))
+  :if (and (not (display-graphic-p)) (version< emacs-version "31"))
   :ensure t
   :config
   (corfu-terminal-mode))
@@ -114,6 +114,7 @@
 ;; for some reason, this will stay within this file
 (use-package eshell
   :ensure nil
+  :defer t
   :hook
   (eshell-mode . corfu-mode)
   :custom

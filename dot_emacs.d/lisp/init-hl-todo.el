@@ -26,8 +26,7 @@
           ("BAD" error bold)
           ("KILLME" error bold)
           ("BUG" error bold)
-          ("FIXME" error bold)))
-  (global-hl-todo-mode 1))
+          ("FIXME" error bold))))
 
 (provide 'init-hl-todo)
 ;;; init-hl-todo.el ends here

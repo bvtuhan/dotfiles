@@ -6,6 +6,7 @@
 
 (use-package org
   :ensure nil
+  :defer t
 
   :hook ((org-mode . my/org-setup-auto-fill)
          (org-mode . hl-todo-mode)

@@ -6,8 +6,7 @@
 
 (use-package zig-mode
   :ensure t
-  :config
-  (add-to-list 'auto-mode-alist '("\\.\\(zig\\|zon\\)\\'" . zig-mode)))
+  :mode "\\.\\(zig\\|zon\\)\\'")
 
 
 (provide 'init-zig)
