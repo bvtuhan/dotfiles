@@ -174,9 +174,9 @@
            :which-key "Open ~/cs-doom-log/")
 
     "fb" '((lambda ()
-            (interactive)
-            (find-file-other-window "~/bvtuhan.github.io/"))
-          :which-key "Open the blog directory")
+             (interactive)
+             (find-file "~/bvtuhan.github.io/"))
+           :which-key "Open the blog directory")
 
     "w" '(evil-window-map :which-key "window")
 
