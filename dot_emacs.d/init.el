@@ -112,7 +112,6 @@
 (require 'init-org)
 (require 'init-remote)
 (require 'init-spellcheck)
-(require 'init-scripts)
 
 (provide 'init)
 ;;; init.el ends here
