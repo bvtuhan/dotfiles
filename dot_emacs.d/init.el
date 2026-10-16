@@ -68,8 +68,8 @@
                 doom-modeline edraw evil-collection evil-goggles
                 evil-org evil-tex flycheck-eglot flycheck-posframe
                 general hl-todo jinx marginalia orderless org-download
-                org-fragtog org-noter pdf-tools rustic sly undo-fu
-                undo-fu-session uniline vertico vhdl-ext
+                org-draw org-fragtog org-noter pdf-tools rustic sly
+                undo-fu undo-fu-session uniline vertico vhdl-ext
                 yasnippet-snippets yellowbeans-theme zig-mode))
  '(package-vc-selected-packages
    '((yellowbeans-theme :url
