@@ -82,10 +82,25 @@
   "Add the yanked BibTeX entry to the references.bib file located in the current working directory."
   (interactive)
   (when (not (file-exists-p "references.bib"))
+    (message "Note: references.bib does not exist. Creating a new one.")
     (make-empty-file "references.bib"))
   (let ((file-path "references.bib")
         (text-to-append (current-kill 0)))
     (write-region (concat "\n" text-to-append) nil file-path t)))
+
+(defun bibtex--add (content)
+  "Add the given CONTENT into the `references.bib' file."
+  (when (not (file-exists-p "references.bib"))
+    (message "Note: references.bib does not exist. Creating a new one.")
+    (make-empty-file "references.bib"))
+  (let ((file-path "references.bib"))
+    (write-region (concat "\n" content) nil file-path t)))
+
+(defun bibtex-add ()
+  "Add the content provided from the minibuffer into `references.bib' file."
+  (interactive)
+  (let ((content (read-from-minibuffer "Content: ")))
+    (bibtex--add content)))
 
 (provide 'init-tex)
 ;;; init-tex.el ends here
