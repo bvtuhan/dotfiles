@@ -1,0 +1,28 @@
+profile home-laptop1 {
+    #TODO: Replace it with the unique identifier
+    output eDP-1 mode 1920x1080@60.008Hz position 0,0 scale 1
+    output HDMI-A-1 mode 1920x1080@239.760Hz position 1920,0 scale 1
+    output DP-1 mode 1280x1024@75.025Hz position 3840,0 scale 1
+
+    exec swaymsg "workspace 1, move workspace to output HDMI-A-1"
+    exec swaymsg "workspace 2, move workspace to output eDP-1"
+    exec swaymsg "workspace 3, move workspace to output DP-1"
+}
+
+profile home-laptop2 {
+    output "AU Optronics 0x106C Unknown" mode 1366x768@60.111Hz position 0,0 scale 1
+    output HDMI-A-1 mode 1920x1080@239.760Hz position 1366,0 scale 1
+    output DP-1 mode 1280x1024@75.025Hz position 3286,0 scale 1
+
+    exec swaymsg "workspace 1, move workspace to output HDMI-A-1"
+    exec swaymsg "workspace 2, move workspace to output eDP-1"
+    exec swaymsg "workspace 3, move workspace to output DP-1"
+}
+
+profile uni {
+    output "AU Optronics 0x106C Unknown" mode 1366x768@60.111Hz position 1967,1440 scale 1
+    output DP-2 mode 2560x1440@59.951Hz position 1366,0 scale 1
+
+    exec swaymsg "workspace 1, move workspace to output DP-2"
+    exec swaymsg "workspace 2, move workspace to output eDP-1"
+}

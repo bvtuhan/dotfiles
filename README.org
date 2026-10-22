@@ -66,8 +66,9 @@ fc-cache -fv
 sudo pacman -S i3status # for status bar
 sudo pacman -S swaybg # for background
 sudo pacman -S grim wl-clipboard slurp # for screenshot
-sudo pacman -S wdisplays # display adjuster
+sudo pacman -S wdisplays # display manager
 sudo pacman -S pavucontrol # voice control
+sudo pacman -S kanshi # wayland display manager
 #+END_SRC
 
 ** Virtualization Setup
