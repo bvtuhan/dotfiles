@@ -11,8 +11,7 @@
         `(
           ("TODO" warning bold)
           ("MEMORIZE" warning bold)
-          ("WIP" font-lock-keyword-face bold)
-          ("REVIEW" font-lock-keyword-face bold)
+          ("TERM" font-lock-keyword-face bold)
           ("NOTSURE" font-lock-keyword-face bold)
           ("NOTE" success bold)
           ("SOLUTION" success bold)

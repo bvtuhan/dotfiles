@@ -21,7 +21,10 @@ input * {
     xkb_options "caps:escape,compose:ralt"
 }
 
-exec kanshi
+exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY DISPLAY XDG_CURRENT_DESKTOP
+exec gnome-keyring-daemon --start --components=secrets
+exec kanshi -c ~/.config/kanshi/config
+exec nm-applet --indicator
 
 ### Key bindings
 #

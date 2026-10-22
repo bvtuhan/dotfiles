@@ -85,6 +85,13 @@ auth       optional     pam_gnome_keyring.so
 session    optional     pam_gnome_keyring.so auto_start
 #+END_SRC
 
+** Audio Configuration
+
+#+BEGIN_SRC
+sudo pacman -S --needed pipewire pipewire-audio pipewire-pulse wireplumber pavucontrol
+systemctl --user enable --now pipewire.service pipewire-pulse.service wireplumber.service
+#+END_SRC
+
 ** Virtualization Setup
 
 #+BEGIN_SRC bash
