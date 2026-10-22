@@ -71,6 +71,20 @@ sudo pacman -S pavucontrol # voice control
 sudo pacman -S kanshi # wayland display manager
 #+END_SRC
 
+** Keyring Configuration
+
+#+BEGIN_SRC bash
+sudo pacman -S gnome-keyring libsecret network-manager-applet seahorse
+# seahorse is optional
+#+END_SRC
+
+Then add these into =/etc/pam.d/login=:
+#+BEGIN_SRC text
+#%PAM-1.0
+auth       optional     pam_gnome_keyring.so
+session    optional     pam_gnome_keyring.so auto_start
+#+END_SRC
+
 ** Virtualization Setup
 
 #+BEGIN_SRC bash
