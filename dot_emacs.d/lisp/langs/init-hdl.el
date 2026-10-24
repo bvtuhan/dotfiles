@@ -42,29 +42,33 @@
   :config
   (vhdl-ext-mode-setup))
 
-(use-package verilog-ext)
-(setq verilog-ext-feature-list
-      '(font-lock
-        xref
-        capf
-        hierarchy
-        eglot
-        flycheck
-        beautify
-        navigation
-        template
-        formatter
-        compilation
-        imenu
-        which-func
-        hideshow
-        typedefs
-        time-stamp
-        block-end-comments
-        ports))
-(require 'verilog-ext)
-(verilog-ext-mode-setup)
-(add-hook 'verilog-mode-hook #'verilog-ext-mode)
+
+(use-package verilog-ext
+  :ensure t
+  :after verilog-mode
+  :hook ((verilog-mode . verilog-ext-mode))
+  :init
+  (setq verilog-ext-feature-list
+        '(font-lock
+          xref
+          capf
+          hierarchy
+          eglot
+          flycheck
+          beautify
+          navigation
+          template
+          formatter
+          compilation
+          imenu
+          which-func
+          hideshow
+          typedefs
+          time-stamp
+          block-end-comments
+          ports))
+  :config
+  (verilog-ext-mode-setup))
 
 (provide 'init-hdl)
 ;;; init-hdl.el ends here
