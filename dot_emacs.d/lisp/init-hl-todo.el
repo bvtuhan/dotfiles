@@ -9,9 +9,10 @@
   (setq hl-todo-highlight-punctuation ":"
         hl-todo-keyword-faces
         `(
+          ("TERM" font-lock-type-face bold)
+          ("DEFINITION" font-lock-type-face bold)
           ("TODO" warning bold)
           ("MEMORIZE" warning bold)
-          ("TERM" font-lock-keyword-face bold)
           ("NOTSURE" font-lock-keyword-face bold)
           ("NOTE" success bold)
           ("SOLUTION" success bold)
