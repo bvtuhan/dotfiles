@@ -200,5 +200,17 @@
   :config
   (setq org-draw-directory "images"))
 
+;; custom scripts
+
+(defun org-new ()
+  "Creates a new `org-mode' file stamped with the current date."
+  (interactive)
+  (let* ((current-time (format-time-string "%Y-%m-%d"))
+         (org-file-name (read-from-minibuffer "Enter file name: "))
+         (file-path (concat current-time "-" org-file-name ".org")))
+    (cond
+     ((file-exists-p file-path) (message "File already exists. Skipping"))
+     (t (write-region "" nil file-path t)))))
+
 (provide 'init-org)
 ;;; init-org.el ends here
