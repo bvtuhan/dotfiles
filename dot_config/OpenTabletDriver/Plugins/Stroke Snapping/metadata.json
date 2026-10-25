@@ -1,0 +1,14 @@
+{
+  "Name": "Stroke Snapping",
+  "Owner": "nahkd123",
+  "Description": "Snaps pointer to the ends of previous stroke",
+  "PluginVersion": "1.1.0.0",
+  "SupportedDriverVersion": "0.6.6.0",
+  "MaxSupportedDriverVersion": null,
+  "RepositoryUrl": "https://github.com/nahkd123/StrokeSnapping",
+  "DownloadUrl": "https://github.com/nahkd123/StrokeSnapping/releases/download/v1.1.0/StrokeSnapping.zip",
+  "CompressionFormat": "zip",
+  "SHA256": "0c63aac7296f3c11eced857841811c21fe15bf47c6969de5bcbb2a198ee43ca1",
+  "WikiUrl": "https://github.com/nahkd123/StrokeSnapping/blob/v1.1.0/README.md",
+  "LicenseIdentifier": "GPL-3.0-only"
+}

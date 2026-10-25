@@ -87,9 +87,18 @@ session    optional     pam_gnome_keyring.so auto_start
 
 ** Audio Configuration
 
-#+BEGIN_SRC
+#+BEGIN_SRC bash
 sudo pacman -S --needed pipewire pipewire-audio pipewire-pulse wireplumber pavucontrol
 systemctl --user enable --now pipewire.service pipewire-pulse.service wireplumber.service
+#+END_SRC
+
+** Graphic Tablet Configuration
+
+#+BEGIN_SRC bash
+yay -S opentabletdriver
+sudo modprobe uinput
+echo "uinput" | sudo tee /etc/modules-load.d/uinput.conf
+systemctl --user enable --now opentabletdriver.service
 #+END_SRC
 
 ** Virtualization Setup
