@@ -170,8 +170,8 @@
 
     "fc" '((lambda ()
              (interactive)
-             (find-file "~/cs-doom-log/"))
-           :which-key "Open ~/cs-doom-log/")
+             (find-file "~/cs-repo/"))
+           :which-key "Open ~/cs-repo/")
 
     "fb" '((lambda ()
              (interactive)
