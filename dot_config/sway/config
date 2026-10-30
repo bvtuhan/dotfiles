@@ -15,7 +15,7 @@ set $right l
 set $term foot
 set $menu wmenu-run
 
-output * bg ./freckles-lights.jpg fill
+output * bg ./cyberpunk.png fill
 
 input * {
     xkb_options "caps:escape,compose:ralt"
