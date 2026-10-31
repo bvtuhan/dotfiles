@@ -27,6 +27,7 @@
 (setq inhibit-startup-message t)
 (setq initial-scratch-message "")
 (setq initial-major-mode 'text-mode)
+(setq find-file-visit-truename t) ;; follow always the actual target file
 
 ;; HACK: https://github.com/minad/consult/discussions/853
 (require 'display-line-numbers)
