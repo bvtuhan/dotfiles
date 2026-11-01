@@ -151,6 +151,16 @@
                     ("wikipedia" . "https://en.wikipedia.org/wiki/%s")))
     (add-to-list 'org-link-abbrev-alist abbrev)))
 
+(use-package org-eldoc
+  :ensure org-contrib
+  :defer t
+  :after org
+  :hook (org-mode . org-eldoc-load)
+  :init
+  (setq org-eldoc-breadcrumb-separator " → ")
+  :config
+  (add-hook 'org-mode-hook #'eldoc-mode))
+
 (use-package evil-org
   :after org
   :hook ((org-mode . evil-org-mode)
