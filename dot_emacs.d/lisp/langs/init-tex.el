@@ -31,8 +31,9 @@
   :defer t
   :custom
   (TeX-electric-sub-and-superscript t)
-  (LaTeX-item-indent -2)
-  (LaTeX-indent-level 2))
+  (LaTeX-indent-level 2)
+  (LaTeX-item-indent 0)
+  (TeX-newline-function #'newline-and-indent))
 
 (use-package preview
   :ensure auctex
