@@ -150,12 +150,16 @@
               (unless (file-remote-p default-directory)
                 (auto-revert-mode 1))))
   :config
-  (push 'toggle-window-split dired-sidebar-toggle-hidden-commands)
-  (push 'rotate-windows dired-sidebar-toggle-hidden-commands)
+  (setq dired-sidebar-toggle-hidden-commands
+        '(toggle-window-split rotate-windows))
+
+  (advice-remove 'balance-windows
+                 #'dired-sidebar-advice-hide-temporarily)
 
   (setq dired-sidebar-subtree-line-prefix "__"
         dired-sidebar-use-term-integration nil
-        dired-sidebar-use-custom-font t)
+        dired-sidebar-use-custom-font t
+        dired-sidebar-no-delete-other-windows t)
 
   (with-eval-after-load 'evil
     (evil-define-key 'normal dired-sidebar-mode-map
