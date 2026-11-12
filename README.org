@@ -101,6 +101,12 @@ echo "uinput" | sudo tee /etc/modules-load.d/uinput.conf
 systemctl --user enable --now opentabletdriver.service
 #+END_SRC
 
+** Default PDF Viewer
+
+#+BEGIN_SRC bash
+xdg-mime default firefox.desktop application/pdf
+#+END_SRC
+
 ** Virtualization Setup
 
 #+BEGIN_SRC bash
