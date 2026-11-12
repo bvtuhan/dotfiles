@@ -170,8 +170,8 @@
 
     "fc" '((lambda ()
              (interactive)
-             (find-file "~/cs-repo/"))
-           :which-key "Open ~/cs-repo/")
+             (find-file "~/braindumps/"))
+           :which-key "Open ~/braindumps/")
 
     "fb" '((lambda ()
              (interactive)
