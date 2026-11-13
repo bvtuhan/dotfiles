@@ -1,3 +1,6 @@
+[Canvas]
+BackgroundColorDark=0,0,0
+
 [Properties]
 FontSize=19
 
@@ -6,6 +9,8 @@ LastSavedFile=
 LastSavedFileModified=false
 
 [Shortcuts]
+switch_to_diamond_tool=;\s
+switch_to_ellipse_tool=D
 switch_to_line_tool=C
 switch_to_move_tool=V
 
