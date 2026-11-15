@@ -196,8 +196,7 @@
 (use-package uniline
   :ensure t
   :after org
-  :bind
-  ("C-c u" . uniline-mode)
+  :bind (:map org-mode-map ("C-c u" . uniline-mode))
   :init
   (setq uniline-key-insert '("C-;")))
 
