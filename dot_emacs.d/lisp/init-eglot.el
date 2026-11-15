@@ -34,5 +34,10 @@
   (add-to-list 'eglot-server-programs
                '((zig-mode zig-ts-mode) . ("zls"))))
 
+(with-eval-after-load 'eglot
+  (setq eglot-ignored-server-capabilities
+        (cons :documentOnTypeFormattingProvider
+              eglot-ignored-server-capabilities)))
+
 (provide 'init-eglot)
 ;;; init-eglot.el ends here

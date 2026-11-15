@@ -49,10 +49,10 @@
 (save-place-mode 1)
 (global-auto-revert-mode 1)
 (setq ring-bell-function 'ignore)
+(setq c-default-style "linux"
+      c-basic-offset 4)
 (setq-default indent-tabs-mode nil
               tab-width 4
-              c-basic-offset 4 ;; reset in init-langs.el
-              c-default-style "linux"
               fill-column 70
               word-wrap t
               truncate-lines t)
