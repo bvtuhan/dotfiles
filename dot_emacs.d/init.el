@@ -74,7 +74,7 @@
  '(package-vc-selected-packages
    '((yellowbeans-theme :url "https://github.com/bvtuhan/yellowbeans-theme-emacs"))))
 
-;; theme
+;; theme, to update, use `package-vc-upgrade'
 (use-package yellowbeans-theme
   :vc (:url "https://github.com/bvtuhan/yellowbeans-theme-emacs"
             :rev :newest)
