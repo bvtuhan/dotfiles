@@ -13,6 +13,7 @@ status --is-interactive; and pyenv init - | source
 
 alias sway-gpu='sway --unsupported-gpu'
 alias godot='cd ~/.local/share/chezmoi/'
+alias otd-enable='systemctl --user enable --now opentabletdriver.service'
 
 alias sleep='sudo systemctl sleep'
 alias suspend='sudo systemctl suspend'
