@@ -153,7 +153,6 @@
 
 (use-package org-eldoc
   :ensure org-contrib
-  :defer t
   :after org
   :hook (org-mode . org-eldoc-load)
   :init
@@ -195,10 +194,23 @@
 
 (use-package uniline
   :ensure t
+  :defer t
   :after org
   :bind (:map org-mode-map ("C-c u" . uniline-mode))
   :init
   (setq uniline-key-insert '("C-;")))
+
+(use-package org-draw
+  :ensure t
+  :defer t
+  :after org
+  :commands (org-draw org-draw-edit org-draw-setup)
+  :bind (:map org-mode-map
+              ("C-c d d" . org-draw)
+              ("C-c d e" . org-draw-edit)
+              ("C-c d s" . org-draw-setup))
+  :config
+  (setq org-draw-directory "images"))
 
 ;; custom scripts
 
