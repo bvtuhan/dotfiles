@@ -208,11 +208,44 @@
   :bind (:map org-mode-map
               ("C-c d d" . org-draw)
               ("C-c d e" . org-draw-edit)
-              ("C-c d s" . org-draw-setup))
+              ("C-c d s" . org-draw-setup)
+              ("C-c d c" . org-draw-duplicate))
   :config
-  (setq org-draw-directory "images"))
+  (setq org-draw-directory "images")
+  :custom
+  (org-draw-web-canvas-file
+   (expand-file-name "org-draw/canvas.html"
+                     user-emacs-directory)))
 
 ;; custom scripts
+
+(defun org-draw-duplicate ()
+  "Duplicate the org-draw illustration at point and edit the copy."
+  (interactive)
+  (require 'org-draw)
+  (let ((info (org-draw-dwim-at-point)))
+    (unless (eq (car info) :edit)
+      (user-error "No editable org-draw illustration at point"))
+    (let* ((source (nth 1 info))
+           (directory (file-name-directory source))
+           (name (concat
+                  (format-time-string "fig-%Y%m%d-%H%M%S")
+                  "-"
+                  (substring (org-draw-generate-id) 0 8)
+                  ".png"))
+           (target (expand-file-name name directory)))
+      (copy-file source target)
+      (end-of-line)
+      (newline)
+      (let ((start (point)))
+        (insert
+         (org-link-make-string
+          (concat "file:"
+                  (file-relative-name target
+                                      (file-name-directory
+                                       buffer-file-name)))))
+        (goto-char (+ start 2)))
+      (org-draw))))
 
 (defun org-new ()
   "Creates a new `org-mode' file stamped with the current date."
