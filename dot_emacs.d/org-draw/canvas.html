@@ -29,13 +29,13 @@
 <section id="screenWaiting" class="overlay" hidden><div class="card"><div class="spinner"></div><h1>Ready</h1><p>Run <code>M-x org-draw</code> to begin a drawing.</p><p id="waitingOrigin"></p><button id="btnUnpair">Disconnect</button></div></section>
 <section id="screenDone" class="overlay" hidden><div class="card"><h1 id="doneTitle">Finished</h1><p id="doneHint">You may close this tab.</p></div></section>
 <script type="module">
-let React, createRoot, Tldraw, getSnapshot, loadSnapshot;
+let React, createRoot, Tldraw, getSnapshot, loadSnapshot, DefaultSizeStyle;
 const el = id => document.getElementById(id);
 function showScreen(name){for(const node of document.querySelectorAll('.overlay'))node.hidden=node.id!==name;}
 try {
  React=(await import('react')).default;
  ({createRoot}=await import('react-dom/client'));
- ({Tldraw,getSnapshot,loadSnapshot}=await import('tldraw'));
+ ({Tldraw,getSnapshot,loadSnapshot,DefaultSizeStyle}=await import('tldraw'));
 } catch(e){el('errorHint').textContent='Could not load tldraw: '+e.message;showScreen('screenError');throw e;}
 const raw=window.ORGDRAW_CONFIG||{}, query=new URLSearchParams(location.search);
 const option=(key,otherwise=null)=>raw[key]??query.get(key)??otherwise;
@@ -518,6 +518,63 @@ function installSmartShapes(ed) {
   return smartCleanup;
 }
 
+function hasRichTextContent(node) {
+  if (!node) return false;
+  if (typeof node.text === 'string' && node.text.length > 0) return true;
+  if (Array.isArray(node.content)) return node.content.some(hasRichTextContent);
+  return false;
+}
+function hasShapeText(shape) {
+  if (!shape?.props) return false;
+  if ('richText' in shape.props) return hasRichTextContent(shape.props.richText);
+  if ('text' in shape.props) return typeof shape.props.text === 'string' && shape.props.text.length > 0;
+  return false;
+}
+function clearShapeText(ed, shape) {
+  if (!shape?.props) return false;
+  if ('richText' in shape.props) {
+    ed.updateShape({ id: shape.id, type: shape.type, props: { richText: { type: 'doc', content: [{ type: 'paragraph' }] } } });
+    return true;
+  }
+  if ('text' in shape.props) {
+    ed.updateShape({ id: shape.id, type: shape.type, props: { text: '' } });
+    return true;
+  }
+  return false;
+}
+function isPointInShapeInterior(ed, shape, pagePt) {
+  if (!pagePt || !shape?.props || typeof shape.props.w !== 'number' || typeof shape.props.h !== 'number') return false;
+  const dx = pagePt.x - shape.x, dy = pagePt.y - shape.y;
+  const rot = shape.rotation || 0;
+  const cos = Math.cos(-rot), sin = Math.sin(-rot);
+  const lx = dx * cos - dy * sin;
+  const ly = dx * sin + dy * cos;
+  const margin = Math.min(14 / (ed.getZoomLevel() || 1), Math.min(shape.props.w, shape.props.h) * 0.25);
+  return lx > margin && lx < shape.props.w - margin && ly > margin && ly < shape.props.h - margin;
+}
+function installSafeTextErase(ed) {
+  const pendingClear = new Set();
+  return ed.sideEffects.registerBeforeDeleteHandler('shape', (shape, source) => {
+    if (source !== 'user' || ed.getCurrentToolId?.() !== 'eraser') return;
+    if (shape.type !== 'geo' || !hasShapeText(shape)) return;
+    const pt = ed.inputs?.currentPagePoint;
+    if (!isPointInShapeInterior(ed, shape, pt)) return;
+    if (!pendingClear.has(shape.id)) {
+      pendingClear.add(shape.id);
+      queueMicrotask(() => {
+        pendingClear.delete(shape.id);
+        const latest = ed.getShape(shape.id);
+        if (latest && hasShapeText(latest)) {
+          ed.markHistoryStoppingPoint('clear shape text');
+          ed.run(() => clearShapeText(ed, latest));
+          toast('Cleared text (erase border to delete box)');
+        }
+      });
+    }
+    return false;
+  });
+}
+
 const uiSync = { setSmart: null, setGrid: null, setPen: null };
 function cycleSmartMode() {
   smartMode = ({ hold: 'auto', auto: 'off', off: 'hold' })[smartMode];
@@ -570,18 +627,31 @@ function PenButton() {
 }
 // END OrgDraw Smart Shapes & Canvas UX extension
 
+const PENCIL_SCALE = 0.6;
+function installPencilScale(ed) {
+  return ed.sideEffects.registerBeforeCreateHandler('shape', (shape, source) => {
+    if (source === 'user' && shape.type === 'draw' && !shape.props?.isComplete) {
+      return { ...shape, props: { ...shape.props, scale: (shape.props.scale ?? 1) * PENCIL_SCALE } };
+    }
+    return shape;
+  });
+}
+
 function onEditorMount(ed){
  editor=ed;
  try{
    ed.user.updateUserPreferences({colorScheme:theme});
    ed.updateInstanceState({isGridMode:prefs.gridMode,isPenMode:prefs.penMode});
+   if(DefaultSizeStyle)ed.setStyleForNextShapes(DefaultSizeStyle,'s');
    ed.setCurrentTool('draw');
  }catch{}
  if(prefs.hideStyle)el('tldraw').classList.add('orgdraw-hide-style');
  if(pending!==undefined){applyDrawing(pending);pending=undefined;}
  ready.splice(0).forEach(resolve=>resolve(ed));
  const cleanup=installSmartShapes(ed);
- return ()=>{cleanup();if(editor===ed)editor=null;};
+ const cleanupErase=installSafeTextErase(ed);
+ const cleanupPencil=installPencilScale(ed);
+ return ()=>{cleanup();cleanupErase();cleanupPencil();if(editor===ed)editor=null;};
 }
 function clearCanvas(){if(editor){const ids=[...editor.getCurrentPageShapeIds()];if(ids.length)editor.deleteShapes(ids);}}
 function applyDrawing(snapshot){if(!editor){pending=snapshot;return;}clearCanvas();if(snapshot){try{loadSnapshot(editor.store,JSON.parse(snapshot));}catch(e){console.warn('Cannot restore drawing',e);}}try{editor.zoomToFit({animation:{duration:0}});}catch{}}
@@ -589,7 +659,11 @@ function bytesToB64(bytes){let result='';for(let i=0;i<bytes.length;i+=8192)resu
 function decode(s){return new TextDecoder().decode(Uint8Array.from(atob(s),c=>c.charCodeAt(0)));}
 async function exportResult(){
  const ed=await whenEditorReady(),ids=[...ed.getCurrentPageShapeIds()],drawing=JSON.stringify(getSnapshot(ed.store));let png='';
- if(ids.length){let {blob}=await ed.toImage(ids,{format:'png',background:false,scale:2,padding:16});
+ if(ids.length){
+  let scale=1,bounds=null;
+  for(const id of ids){const b=ed.getShapePageBounds(id);if(b)bounds=bounds?bounds.union(b):b.clone();}
+  if(bounds){const maxDim=Math.max(bounds.width,bounds.height)+32;if(maxDim<=400)scale=1.5;else if(maxDim>1200)scale=Math.max(0.4,1200/maxDim);}
+  let {blob}=await ed.toImage(ids,{format:'png',background:false,scale,padding:16});
   const bg=CONFIG.background;if(bg&&bg!=='transparent'){
    const bitmap=await createImageBitmap(blob),c=document.createElement('canvas');c.width=bitmap.width;c.height=bitmap.height;const ctx=c.getContext('2d');ctx.fillStyle=bg==='light'?'#ffffff':bg==='dark'?'#0b0d10':bg;ctx.fillRect(0,0,c.width,c.height);ctx.drawImage(bitmap,0,0);bitmap.close();blob=await new Promise(resolve=>c.toBlob(resolve,'image/png'));
   }png=bytesToB64(new Uint8Array(await blob.arrayBuffer()));
@@ -626,6 +700,15 @@ window.addEventListener('keydown',e=>{
   if(k==='s'){e.preventDefault();cycleSmartMode();}
   else if(k==='g'){e.preventDefault();toggleGridMode();}
   else if(k==='p'){e.preventDefault();togglePenMode();}
+  else if((e.key==='Backspace'||e.key==='Delete')&&editor){
+   const selected=editor.getSelectedShapes().filter(hasShapeText);
+   if(selected.length){
+    e.preventDefault();
+    editor.markHistoryStoppingPoint('clear shape text');
+    editor.run(()=>selected.forEach(s=>clearShapeText(editor,s)));
+    toast('Cleared text');
+   }
+  }
  }
 });
 if(CONFIG.screen==='drawing'){if(CONFIG.mode==='edit'&&CONFIG.drawing){try{applyDrawing(decode(CONFIG.drawing));}catch{}}status(DEMO?'demo':'drawing');showScreen(null);}else if(CONFIG.screen==='waiting')enterWaiting();else enterPairing();

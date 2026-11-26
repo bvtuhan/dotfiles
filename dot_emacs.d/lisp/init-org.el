@@ -212,6 +212,7 @@
               ("C-c d c" . org-draw-duplicate))
   :config
   (setq org-draw-directory "images")
+  (setq org-draw-insert-attr-width 600)
   :custom
   (org-draw-web-canvas-file
    (expand-file-name "org-draw/canvas.html"

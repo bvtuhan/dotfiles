@@ -24,6 +24,7 @@
           ("NOTE" font-lock-string-face bold)
           ("XXX" font-lock-constant-face bold)
           ("HACK" font-lock-constant-face bold)
+          ("CONCLUSION" font-lock-constant-face bold)
           ("DEPRECATED" font-lock-doc-face bold)
           ("DELETEME" error bold)
           ("PROBLEM" error bold)
