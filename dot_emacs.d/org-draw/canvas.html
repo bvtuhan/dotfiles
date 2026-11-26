@@ -17,12 +17,12 @@
 :root {color-scheme: light dark; font: 15px system-ui,sans-serif; --paper:#f6f7f9; --ink:#14161a; --panel:#fff; --accent:#0a84ff;}
 @media(prefers-color-scheme:dark){:root{--paper:#0b0d10;--ink:#eef0f3;--panel:#202329;}}
 *{box-sizing:border-box} html,body{margin:0;width:100%;height:100%;overflow:hidden;overscroll-behavior:none;background:var(--paper);color:var(--ink)}
-#tldraw{position:fixed;inset:0}.orgdraw-share{display:flex;align-items:center;gap:2px;pointer-events:auto;padding-right:2px}.orgdraw-share button{white-space:nowrap}.orgdraw-hide-style .tlui-style-panel__wrapper{display:none!important}
+#tldraw{position:fixed;inset:0}.orgdraw-share{display:flex;align-items:center;gap:2px;pointer-events:auto;padding-right:2px;flex-wrap:nowrap}.orgdraw-share button{white-space:nowrap;padding:0 8px}.orgdraw-share button[aria-pressed="true"]{background:var(--accent);color:#fff}.orgdraw-hide-style .tlui-style-panel__wrapper{display:none!important}.orgdraw-hold-badge{position:fixed;z-index:1150;pointer-events:none;transform:translate(-50%,-140%);background:var(--panel);color:var(--ink);border:1px solid var(--accent);box-shadow:0 3px 14px #0003;border-radius:999px;padding:4px 10px;font-size:12px;font-weight:600;opacity:0;transition:opacity .12s}.orgdraw-hold-badge.show{opacity:1}@media(max-width:640px){.orgdraw-share button{padding:0 6px;font-size:12px}}
 .overlay{position:fixed;inset:0;display:grid;place-items:center;background:var(--paper);z-index:1000;padding:24px}.overlay[hidden]{display:none}.card{width:min(340px,100%);display:grid;gap:12px;text-align:center}.card h1,.card p{margin:0}.card p{line-height:1.5}.card input,.card button{font:inherit;padding:13px;border-radius:10px;border:1px solid #8886}.card button{cursor:pointer;background:var(--accent);color:white;border:0}.card input{text-align:center;font-size:24px;letter-spacing:5px;background:var(--panel);color:var(--ink)}#pairError{color:#e44}.spinner{margin:auto;width:28px;height:28px;border:3px solid #8884;border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}#toast{position:fixed;z-index:1200;top:calc(env(safe-area-inset-top,0px) + 62px);left:50%;transform:translateX(-50%);background:var(--panel);color:var(--ink);box-shadow:0 3px 20px #0003;border-radius:12px;padding:10px 16px;opacity:0;pointer-events:none;transition:opacity .15s;text-align:center}#toast.show{opacity:1}
 </style>
 </head>
 <body>
-<div id="tldraw"></div><div id="toast" role="status"></div>
+<div id="tldraw"></div><div id="toast" role="status"></div><div id="holdBadge" class="orgdraw-hold-badge" aria-hidden="true"></div>
 <section id="screenLoading" class="overlay"><div class="card"><div class="spinner"></div><h1>Loading OrgDraw</h1><p>Connecting to the drawing engine…</p></div></section>
 <section id="screenError" class="overlay" hidden><div class="card"><h1>Canvas unavailable</h1><p id="errorHint"></p><button onclick="location.reload()">Reload</button></div></section>
 <section id="screenPairing" class="overlay" hidden><div class="card"><h1>Pair with Emacs</h1><p>Run <code>M-x org-draw-setup</code> and enter the six-digit code.</p><input id="pairCode" inputmode="numeric" maxlength="6" autocomplete="one-time-code" placeholder="000000" aria-label="Pairing code"><p id="pairError" role="alert"></p><button id="btnPair">Connect</button></div></section>
@@ -61,178 +61,523 @@ function status(message){document.title='OrgDraw – '+message;}
 let editor=null,pending,ready=[];
 function whenEditorReady(){return editor?Promise.resolve(editor):new Promise(resolve=>ready.push(resolve));}
 
-// BEGIN OrgDraw Smart Shapes extension
-let smartMode = "hold";
-const SMART_HOLD_MS = 500;
-const SMART_MIN_PX = 32;
+// BEGIN OrgDraw Smart Shapes & Canvas UX extension
+const PREFS_KEY = 'orgdraw.prefs';
+function loadPrefs() {
+  try {
+    const p = JSON.parse(localStorage.getItem(PREFS_KEY) || '{}');
+    return {
+      smartMode: ['hold', 'auto', 'off'].includes(p.smartMode) ? p.smartMode : 'hold',
+      gridMode: !!p.gridMode,
+      penMode: !!p.penMode,
+      hideStyle: !!p.hideStyle
+    };
+  } catch {
+    return { smartMode: 'hold', gridMode: false, penMode: false, hideStyle: false };
+  }
+}
+const prefs = loadPrefs();
+function savePrefs() {
+  try { localStorage.setItem(PREFS_KEY, JSON.stringify(prefs)); } catch {}
+}
+let smartMode = prefs.smartMode;
+const SMART_HOLD_MS = 450;
+const SMART_MIN_PX = 28;
+const SMART_SNAP_DEG = 5;
 // Shape-specific tolerances, in normalized bounding-box coordinates.
 const SMART_RECT_ERROR = .105;
 const SMART_RECT_CORNER = .17;
-const SMART_ELLIPSE_ERROR = .055;
+const SMART_DIAMOND_ERROR = .095;
+const SMART_ELLIPSE_ERROR = .058;
 const SMART_ELLIPSE_RADIAL_RMS = .10;
 const SMART_ELLIPSE_RADIAL_P90 = .17;
-const smartDist = (a,b) => Math.hypot(a.x-b.x,a.y-b.y);
-const smartPoint = (x,y) => ({x,y});
-function smartResample(points, n=64) {
+const smartDist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
+const smartPoint = (x, y) => ({ x, y });
+
+function smartResample(points, n = 64) {
   const lengths = [0];
-  for (let i=1;i<points.length;i++) lengths.push(lengths[i-1]+smartDist(points[i-1],points[i]));
-  const total=lengths.at(-1);
+  for (let i = 1; i < points.length; i++) lengths.push(lengths[i - 1] + smartDist(points[i - 1], points[i]));
+  const total = lengths.at(-1);
   if (!total) return [];
-  let j=1;
-  return Array.from({length:n},(_,i)=>{
-    const t=total*i/(n-1);
-    while(j<points.length-1 && lengths[j]<t) j++;
-    const f=(t-lengths[j-1])/(lengths[j]-lengths[j-1] || 1);
-    return smartPoint(points[j-1].x+(points[j].x-points[j-1].x)*f,
-                      points[j-1].y+(points[j].y-points[j-1].y)*f);
+  let j = 1;
+  return Array.from({ length: n }, (_, i) => {
+    const t = total * i / (n - 1);
+    while (j < points.length - 1 && lengths[j] < t) j++;
+    const f = (t - lengths[j - 1]) / (lengths[j] - lengths[j - 1] || 1);
+    return smartPoint(
+      points[j - 1].x + (points[j].x - points[j - 1].x) * f,
+      points[j - 1].y + (points[j].y - points[j - 1].y) * f
+    );
   });
 }
-function smartRecognize(points, zoom=1) {
-  if (points.length<3) return null;
-  const xs=points.map(p=>p.x), ys=points.map(p=>p.y);
-  const x=Math.min(...xs), y=Math.min(...ys);
-  const w=Math.max(...xs)-x, h=Math.max(...ys)-y;
-  const diag=Math.hypot(w,h);
-  if (diag*zoom<SMART_MIN_PX) return null;
-  const p=smartResample(points), a=p[0], b=p.at(-1);
-  if (!a || !b) return null;
-  const chord=smartDist(a,b);
-  let length=0;
-  for(let i=1;i<points.length;i++) length+=smartDist(points[i-1],points[i]);
-  if(chord*zoom>=SMART_MIN_PX && chord/length>.90) {
-    const deviation=Math.max(...p.map(q=>Math.abs((b.x-a.x)*(q.y-a.y)-(b.y-a.y)*(q.x-a.x))/chord));
-    if(deviation/chord<.055) return {kind:"line",a,b};
-  }
-  if (chord/diag>.23 || Math.min(w,h)*zoom<20 || Math.max(w,h)/Math.min(w,h)>4) return null;
-  const norm=q=>smartPoint((q.x-x)/w,(q.y-y)/h);
-  const stroke=p.map(norm);
-  const poly=arr=>smartResample(arr.map(([u,v])=>smartPoint(u,v)));
-  const templates={
-    rectangle:poly([[0,0],[1,0],[1,1],[0,1],[0,0]]),
-    triangle:poly([[.5,0],[1,1],[0,1],[.5,0]]),
-    ellipse:Array.from({length:64},(_,i)=>smartPoint(.5+.5*Math.cos(i*2*Math.PI/64),.5+.5*Math.sin(i*2*Math.PI/64)))
-  };
-  const error=(u,v)=>Math.sqrt(u.reduce((sum,q)=>sum+Math.min(...v.map(r=>smartDist(q,r)**2)),0)/u.length);
-  const scores=Object.fromEntries(Object.entries(templates).map(([kind,t])=>
-    [kind,Math.max(error(stroke,t),error(t,stroke))]));
-  const corners=[[0,0],[1,0],[1,1],[0,1]].map(([u,v])=>smartPoint(u,v));
-  const cornerErrors=corners.map(c=>Math.min(...stroke.map(q=>smartDist(c,q))));
-  const edgeDistance=q=>Math.min(q.x,1-q.x,q.y,1-q.y);
-  const edgeFraction=stroke.filter(q=>edgeDistance(q)<.075).length/stroke.length;
-  const rectangleEvidence=Math.max(...cornerErrors)<SMART_RECT_CORNER && edgeFraction>=.70;
-  const ellipseEvidence=stroke.map(q=>Math.abs(Math.hypot(2*q.x-1,2*q.y-1)-1)).sort((a,b)=>a-b);
-  const radialRms=Math.sqrt(ellipseEvidence.reduce((sum,r)=>sum+r*r,0)/ellipseEvidence.length);
-  const radialP90=ellipseEvidence[Math.floor(.90*(ellipseEvidence.length-1))];
-  const perimeter={rectangle:2*(w+h),triangle:w+2*Math.hypot(w/2,h),
-    ellipse:Math.PI*(3*(w+h)/2-Math.sqrt((3*w+h)*(w+3*h))/2)};
-  const validLength=kind=>length/perimeter[kind]>=.72 && length/perimeter[kind]<=1.25;
-  let best;
-  // Rounded or imperfect rectangles still take priority over ellipses.
-  if(rectangleEvidence && scores.rectangle<=SMART_RECT_ERROR && validLength("rectangle")) {
-    best={kind:"rectangle"};
-  } else if(scores.triangle<=.095 && scores.triangle+.012<Math.min(scores.rectangle,scores.ellipse) && validLength("triangle")) {
-    best={kind:"triangle"};
-  } else if(!rectangleEvidence && scores.ellipse<=SMART_ELLIPSE_ERROR &&
-      scores.ellipse+.018<Math.min(scores.rectangle,scores.triangle) &&
-      radialRms<=SMART_ELLIPSE_RADIAL_RMS && radialP90<=SMART_ELLIPSE_RADIAL_P90 && validLength("ellipse")) {
-    best={kind:"ellipse"};
-  } else return null; // Prefer keeping the original ink over guessing.
-  if(best.kind==="ellipse" && Math.min(w,h)/Math.max(w,h)>.88) {
-    const d=(w+h)/2;
-    return {kind:"ellipse",label:"circle",x:x+(w-d)/2,y:y+(h-d)/2,w:d,h:d};
-  }
-  return {kind:best.kind,x,y,w,h};
+
+function smartSegDist(p, a, b) {
+  const dx = b.x - a.x, dy = b.y - a.y;
+  const len2 = dx * dx + dy * dy;
+  if (!len2) return smartDist(p, a);
+  const t = Math.max(0, Math.min(1, ((p.x - a.x) * dx + (p.y - a.y) * dy) / len2));
+  return Math.hypot(p.x - (a.x + t * dx), p.y - (a.y + t * dy));
 }
-function smartReplace(ed, shape, match) {
-  const style={color:shape.props.color,size:shape.props.size,scale:shape.props.scale??1,dash:"solid"};
-  const base={parentId:shape.parentId,opacity:shape.opacity};
-  let spec;
-  if(match.kind==="line") {
-    const {a,b}=match;
-    spec={...base,type:"line",x:a.x,y:a.y,props:{...style,spline:"line",points:{
-      a1:{id:"a1",index:"a1",x:0,y:0},a2:{id:"a2",index:"a2",x:b.x-a.x,y:b.y-a.y}
-    }}};
-  } else {
-    spec={...base,type:"geo",x:match.x,y:match.y,props:{...style,geo:match.kind,w:match.w,h:match.h,fill:shape.props.fill??"none"}};
+
+function smartRDP(points, eps) {
+  if (points.length <= 2) return points.slice();
+  const a = points[0], b = points.at(-1);
+  let maxD = -1, idx = -1;
+  for (let i = 1; i < points.length - 1; i++) {
+    const d = smartSegDist(points[i], a, b);
+    if (d > maxD) { maxD = d; idx = i; }
   }
-  // Create first and verify success before removing any ink. Keep conversion
-  // as a separate undo step so one Undo restores the original freehand stroke.
-  const before=new Set(ed.getCurrentPageShapeIds());
-  ed.markHistoryStoppingPoint("smart shape");
-  ed.run(()=>{
-    ed.createShape(spec);
-    const added=[...ed.getCurrentPageShapeIds()].filter(id=>!before.has(id));
-    if(added.length===1 && ed.getShape(added[0])?.type===spec.type) {
-      ed.deleteShapes([shape.id]);
-      toast("Smart shape: "+(match.label||match.kind));
+  if (maxD > eps) {
+    const left = smartRDP(points.slice(0, idx + 1), eps);
+    const right = smartRDP(points.slice(idx), eps);
+    return left.slice(0, -1).concat(right);
+  }
+  return [a, b];
+}
+
+function smartSimplifyClosed(points, eps = 0.085) {
+  let pts = smartRDP(points, eps);
+  if (pts.length > 1 && smartDist(pts[0], pts.at(-1)) < eps * 1.4) pts.pop();
+  // Merge nearly-collinear vertices (interior angle > 152 deg)
+  let changed = true;
+  while (changed && pts.length > 3) {
+    changed = false;
+    for (let i = 0; i < pts.length; i++) {
+      const prev = pts[(i - 1 + pts.length) % pts.length];
+      const curr = pts[i];
+      const next = pts[(i + 1) % pts.length];
+      const u = { x: prev.x - curr.x, y: prev.y - curr.y };
+      const v = { x: next.x - curr.x, y: next.y - curr.y };
+      const lu = Math.hypot(u.x, u.y), lv = Math.hypot(v.x, v.y);
+      if (lu < eps || lv < eps) { pts.splice(i, 1); changed = true; break; }
+      const cosA = Math.max(-1, Math.min(1, (u.x * v.x + u.y * v.y) / (lu * lv)));
+      if (Math.acos(cosA) > (152 * Math.PI) / 180) {
+        pts.splice(i, 1); changed = true; break;
+      }
+    }
+  }
+  return pts;
+}
+
+function smartSnapEndpoints(a, b) {
+  const dx = b.x - a.x, dy = b.y - a.y;
+  const len = Math.hypot(dx, dy);
+  if (!len) return { a, b };
+  const angle = Math.atan2(dy, dx);
+  const step = Math.PI / 4; // 0, 45, 90, 135, 180, ...
+  const nearest = Math.round(angle / step) * step;
+  if (Math.abs(angle - nearest) <= (SMART_SNAP_DEG * Math.PI) / 180) {
+    const cx = (a.x + b.x) / 2, cy = (a.y + b.y) / 2;
+    const hx = (len / 2) * Math.cos(nearest), hy = (len / 2) * Math.sin(nearest);
+    return { a: smartPoint(cx - hx, cy - hy), b: smartPoint(cx + hx, cy + hy) };
+  }
+  return { a, b };
+}
+
+function smartDetectArrow(p, diag, zoom) {
+  const n = p.length;
+  const a = p[0];
+  let bestK = -1, maxD = -1;
+  const startK = Math.floor(n * 0.35), endK = Math.floor(n * 0.88);
+  for (let i = startK; i <= endK; i++) {
+    const d = smartDist(a, p[i]);
+    if (d > maxD) { maxD = d; bestK = i; }
+  }
+  // If the stroke revisits the tip (backtrack V-head), prefer the first peak near maxD.
+  for (let i = startK; i < bestK; i++) {
+    const d = smartDist(a, p[i]);
+    if (d >= maxD * 0.94 && smartDist(a, p[i + 1]) < d) {
+      bestK = i;
+      maxD = d;
+      break;
+    }
+  }
+  if (bestK < 4 || bestK >= n - 3) return null;
+  const tip = p[bestK];
+  const shaftLen = maxD;
+  if (shaftLen * zoom < SMART_MIN_PX || shaftLen / diag < 0.52) return null;
+
+  let prefixLen = 0;
+  for (let i = 1; i <= bestK; i++) prefixLen += smartDist(p[i - 1], p[i]);
+  if (shaftLen / (prefixLen || 1) < 0.86) return null;
+
+  const ux = (tip.x - a.x) / shaftLen, uy = (tip.y - a.y) / shaftLen;
+  let maxShaftDev = 0;
+  for (let i = 1; i < bestK; i++) {
+    const dev = Math.abs(ux * (p[i].y - a.y) - uy * (p[i].x - a.x));
+    if (dev > maxShaftDev) maxShaftDev = dev;
+  }
+  if (maxShaftDev / shaftLen > 0.08) return null;
+
+  let maxHeadR = 0, minAlong = Infinity, maxAlong = -Infinity, minPerp = Infinity, maxPerp = -Infinity;
+  for (let i = bestK + 1; i < n; i++) {
+    const dx = p[i].x - tip.x, dy = p[i].y - tip.y;
+    const r = Math.hypot(dx, dy);
+    if (r > maxHeadR) maxHeadR = r;
+    const along = dx * ux + dy * uy;
+    const perp = -dx * uy + dy * ux;
+    if (along < minAlong) minAlong = along;
+    if (along > maxAlong) maxAlong = along;
+    if (perp < minPerp) minPerp = perp;
+    if (perp > maxPerp) maxPerp = perp;
+  }
+  if (maxHeadR < 0.08 * shaftLen || maxHeadR > 0.45 * shaftLen) return null;
+  if (minAlong > -0.05 * shaftLen || maxAlong > 0.08 * shaftLen) return null;
+  if (maxPerp < 0.045 * shaftLen || minPerp > -0.045 * shaftLen) return null;
+  if (smartDist(p.at(-1), tip) > maxHeadR * 1.15) return null;
+
+  return { kind: 'arrow', ...smartSnapEndpoints(a, tip) };
+}
+
+function smartTriangleOrientation(verts) {
+  // Find apex (vertex furthest from opposite edge) and classify into 0, pi/2, pi, -pi/2
+  let bestIdx = 0, bestH = -1;
+  for (let i = 0; i < 3; i++) {
+    const v = verts[i], o1 = verts[(i + 1) % 3], o2 = verts[(i + 2) % 3];
+    const h = smartSegDist(v, o1, o2);
+    if (h > bestH) { bestH = h; bestIdx = i; }
+  }
+  const apex = verts[bestIdx];
+  const baseMid = smartPoint(
+    (verts[(bestIdx + 1) % 3].x + verts[(bestIdx + 2) % 3].x) / 2,
+    (verts[(bestIdx + 1) % 3].y + verts[(bestIdx + 2) % 3].y) / 2
+  );
+  const dx = apex.x - baseMid.x, dy = apex.y - baseMid.y;
+  if (Math.abs(dy) >= Math.abs(dx)) {
+    return dy <= 0 ? 0 : Math.PI;
+  }
+  return dx >= 0 ? Math.PI / 2 : -Math.PI / 2;
+}
+
+function smartRecognize(points, zoom = 1) {
+  if (points.length < 3) return null;
+  const xs = points.map(p => p.x), ys = points.map(p => p.y);
+  const x = Math.min(...xs), y = Math.min(...ys);
+  const w = Math.max(...xs) - x, h = Math.max(...ys) - y;
+  const diag = Math.hypot(w, h);
+  if (diag * zoom < SMART_MIN_PX) return null;
+  const p = smartResample(points), a = p[0], b = p.at(-1);
+  if (!a || !b) return null;
+  const chord = smartDist(a, b);
+  let length = 0;
+  for (let i = 1; i < points.length; i++) length += smartDist(points[i - 1], points[i]);
+
+  if (chord * zoom >= SMART_MIN_PX && chord / length > .90) {
+    const deviation = Math.max(...p.map(q => Math.abs((b.x - a.x) * (q.y - a.y) - (b.y - a.y) * (q.x - a.x)) / chord));
+    if (deviation / chord < .055) return { kind: 'line', ...smartSnapEndpoints(a, b) };
+  }
+
+  const arrow = smartDetectArrow(p, diag, zoom);
+  if (arrow) return arrow;
+
+  if (chord / diag > .25 || Math.min(w, h) * zoom < 20 || Math.max(w, h) / Math.min(w, h) > 4.5) return null;
+  const norm = q => smartPoint((q.x - x) / w, (q.y - y) / h);
+  const stroke = p.map(norm);
+  const poly = arr => smartResample(arr.map(([u, v]) => smartPoint(u, v)));
+  const templates = {
+    rectangle: poly([[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]),
+    diamond: poly([[.5, 0], [1, .5], [.5, 1], [0, .5], [.5, 0]]),
+    ellipse: Array.from({ length: 64 }, (_, i) => smartPoint(.5 + .5 * Math.cos(i * 2 * Math.PI / 64), .5 + .5 * Math.sin(i * 2 * Math.PI / 64)))
+  };
+  const error = (u, v) => Math.sqrt(u.reduce((sum, q) => sum + Math.min(...v.map(r => smartDist(q, r) ** 2)), 0) / u.length);
+  const scores = Object.fromEntries(Object.entries(templates).map(([kind, t]) =>
+    [kind, Math.max(error(stroke, t), error(t, stroke))]));
+
+  const rectCorners = [[0, 0], [1, 0], [1, 1], [0, 1]].map(([u, v]) => smartPoint(u, v));
+  const rectCornerErrors = rectCorners.map(c => Math.min(...stroke.map(q => smartDist(c, q))));
+  const edgeDistance = q => Math.min(q.x, 1 - q.x, q.y, 1 - q.y);
+  const edgeFraction = stroke.filter(q => edgeDistance(q) < .075).length / stroke.length;
+  const rectangleEvidence = Math.max(...rectCornerErrors) < SMART_RECT_CORNER && edgeFraction >= .70;
+
+  const diamondCorners = [[.5, 0], [1, .5], [.5, 1], [0, .5]].map(([u, v]) => smartPoint(u, v));
+  const diamondCornerErrors = diamondCorners.map(c => Math.min(...stroke.map(q => smartDist(c, q))));
+  const diamondEvidence = !rectangleEvidence && Math.max(...diamondCornerErrors) < SMART_RECT_CORNER;
+
+  const ellipseEvidence = stroke.map(q => Math.abs(Math.hypot(2 * q.x - 1, 2 * q.y - 1) - 1)).sort((u, v) => u - v);
+  const radialRms = Math.sqrt(ellipseEvidence.reduce((sum, r) => sum + r * r, 0) / ellipseEvidence.length);
+  const radialP90 = ellipseEvidence[Math.floor(.90 * (ellipseEvidence.length - 1))];
+
+  const perimeter = {
+    rectangle: 2 * (w + h),
+    diamond: 4 * Math.hypot(w / 2, h / 2),
+    ellipse: Math.PI * (3 * (w + h) / 2 - Math.sqrt((3 * w + h) * (w + 3 * h)) / 2)
+  };
+  const validLength = kind => length / perimeter[kind] >= .72 && length / perimeter[kind] <= 1.25;
+
+  // Check arbitrary-orientation triangle via closed RDP simplification
+  const rdpVerts = smartSimplifyClosed(stroke, 0.085);
+  let triMatch = null;
+  if (rdpVerts.length === 3) {
+    const edgeErrs = stroke.map(q => Math.min(
+      smartSegDist(q, rdpVerts[0], rdpVerts[1]),
+      smartSegDist(q, rdpVerts[1], rdpVerts[2]),
+      smartSegDist(q, rdpVerts[2], rdpVerts[0])
+    ));
+    const maxTriErr = Math.max(...edgeErrs);
+    const meanTriErr = edgeErrs.reduce((s, e) => s + e, 0) / edgeErrs.length;
+    const pageVerts = rdpVerts.map(v => smartPoint(v.x * w, v.y * h));
+    const triPerim = smartDist(pageVerts[0], pageVerts[1]) + smartDist(pageVerts[1], pageVerts[2]) + smartDist(pageVerts[2], pageVerts[0]);
+    if (maxTriErr <= 0.11 && meanTriErr <= 0.055 && triPerim > 0 && length / triPerim >= 0.75 && length / triPerim <= 1.25) {
+      triMatch = { kind: 'triangle', rotation: smartTriangleOrientation(rdpVerts) };
+    }
+  }
+
+  let best;
+  if (rectangleEvidence && scores.rectangle <= SMART_RECT_ERROR && validLength('rectangle')) {
+    best = { kind: 'rectangle' };
+  } else if (triMatch && scores.ellipse > 0.065) {
+    best = triMatch;
+  } else if (diamondEvidence && scores.diamond <= SMART_DIAMOND_ERROR &&
+    scores.diamond + .012 < Math.min(scores.rectangle, scores.ellipse) && validLength('diamond')) {
+    best = { kind: 'diamond' };
+  } else if (!rectangleEvidence && scores.ellipse <= SMART_ELLIPSE_ERROR &&
+    scores.ellipse + .015 < Math.min(scores.rectangle, scores.diamond) &&
+    radialRms <= SMART_ELLIPSE_RADIAL_RMS && radialP90 <= SMART_ELLIPSE_RADIAL_P90 && validLength('ellipse')) {
+    best = { kind: 'ellipse' };
+  } else return null;
+
+  const cx = x + w / 2, cy = y + h / 2;
+  if (best.kind === 'ellipse' && Math.min(w, h) / Math.max(w, h) > .88) {
+    const d = (w + h) / 2;
+    return { kind: 'ellipse', label: 'circle', x: cx - d / 2, y: cy - d / 2, w: d, h: d };
+  }
+  if (best.kind === 'rectangle' && Math.min(w, h) / Math.max(w, h) > .88) {
+    const d = (w + h) / 2;
+    return { kind: 'rectangle', label: 'square', x: cx - d / 2, y: cy - d / 2, w: d, h: d };
+  }
+  if (best.kind === 'triangle' && best.rotation) {
+    const rot = best.rotation;
+    const swapped = Math.abs(Math.abs(rot) - Math.PI / 2) < 0.01;
+    const gw = swapped ? h : w, gh = swapped ? w : h;
+    const rx = cx - (gw / 2) * Math.cos(rot) + (gh / 2) * Math.sin(rot);
+    const ry = cy - (gw / 2) * Math.sin(rot) - (gh / 2) * Math.cos(rot);
+    return { kind: 'triangle', x: rx, y: ry, w: gw, h: gh, rotation: rot };
+  }
+  return { kind: best.kind, x, y, w, h };
+}
+
+function smartCheckTwoStrokeArrow(points, lastLine, zoom) {
+  if (!lastLine || performance.now() - lastLine.time > 1800) return null;
+  if (points.length < 3) return null;
+  const xs = points.map(p => p.x), ys = points.map(p => p.y);
+  const diag = Math.hypot(Math.max(...xs) - Math.min(...xs), Math.max(...ys) - Math.min(...ys));
+  const lineLen = smartDist(lastLine.a, lastLine.b);
+  if (diag > lineLen * 0.48 || diag * zoom < 10) return null;
+  const snapDist = Math.max(24 / zoom, lineLen * 0.22);
+  const p = smartResample(points, 24);
+  // Find point in stroke closest to either endpoint a or b
+  let nearEnd = null, bestIdx = -1, bestD = Infinity;
+  for (const endKey of ['a', 'b']) {
+    const endPt = lastLine[endKey];
+    for (let i = 2; i < p.length - 2; i++) {
+      const d = smartDist(p[i], endPt);
+      if (d < bestD) { bestD = d; bestIdx = i; nearEnd = endKey; }
+    }
+  }
+  if (!nearEnd || bestD > snapDist) return null;
+  const v1 = smartPoint(p[0].x - p[bestIdx].x, p[0].y - p[bestIdx].y);
+  const v2 = smartPoint(p.at(-1).x - p[bestIdx].x, p.at(-1).y - p[bestIdx].y);
+  const l1 = Math.hypot(v1.x, v1.y), l2 = Math.hypot(v2.x, v2.y);
+  if (l1 * zoom < 8 || l2 * zoom < 8) return null;
+  const cosA = Math.max(-1, Math.min(1, (v1.x * v2.x + v1.y * v2.y) / (l1 * l2)));
+  const angle = Math.acos(cosA);
+  if (angle < 0.25 || angle > 2.1) return null; // V-head angle ~15..120 deg
+  const start = nearEnd === 'b' ? lastLine.a : lastLine.b;
+  const end = nearEnd === 'b' ? lastLine.b : lastLine.a;
+  return { kind: 'arrow', a: start, b: end, upgradeLineId: lastLine.id };
+}
+
+let lastSmartLine = null;
+function smartReplace(ed, shape, match) {
+  const dash = shape.props.dash === 'dashed' || shape.props.dash === 'dotted' ? shape.props.dash : 'solid';
+  const style = { color: shape.props.color, size: shape.props.size, scale: shape.props.scale ?? 1, dash };
+  const base = { parentId: shape.parentId, opacity: shape.opacity };
+  let spec;
+  if (match.kind === 'line') {
+    const { a, b } = match;
+    spec = { ...base, type: 'line', x: a.x, y: a.y, props: { ...style, spline: 'line', points: {
+      a1: { id: 'a1', index: 'a1', x: 0, y: 0 }, a2: { id: 'a2', index: 'a2', x: b.x - a.x, y: b.y - a.y }
+    } } };
+  } else if (match.kind === 'arrow') {
+    const { a, b } = match;
+    spec = { ...base, type: 'arrow', x: a.x, y: a.y, props: {
+      ...style, fill: 'none', arrowheadStart: 'none', arrowheadEnd: 'arrow', bend: 0,
+      start: { x: 0, y: 0 }, end: { x: b.x - a.x, y: b.y - a.y }
+    } };
+  } else {
+    spec = { ...base, type: 'geo', x: match.x, y: match.y, rotation: match.rotation || 0,
+      props: { ...style, geo: match.kind, w: match.w, h: match.h, fill: shape.props.fill ?? 'none' } };
+  }
+  const before = new Set(ed.getCurrentPageShapeIds());
+  ed.markHistoryStoppingPoint('smart shape');
+  ed.run(() => {
+    try {
+      ed.createShape(spec);
+    } catch (err) {
+      console.warn('Smart shape create failed', err);
+      return;
+    }
+    const added = [...ed.getCurrentPageShapeIds()].filter(id => !before.has(id));
+    if (added.length === 1 && ed.getShape(added[0])?.type === spec.type) {
+      const toDelete = [shape.id];
+      if (match.upgradeLineId && ed.getShape(match.upgradeLineId)) toDelete.push(match.upgradeLineId);
+      ed.deleteShapes(toDelete);
+      if (match.kind === 'line') lastSmartLine = { id: added[0], a: match.a, b: match.b, time: performance.now() };
+      else lastSmartLine = null;
+      toast('Smart shape: ' + (match.label || match.kind));
     }
   });
 }
+
 let smartCleanup;
 function installSmartShapes(ed) {
-  if(smartCleanup) smartCleanup();
-  let gesture=null, frame=0;
-  function reset(){gesture=null; if(frame) cancelAnimationFrame(frame); frame=0;}
-  const down=e=>{
-    if(!e.isPrimary) return;
+  if (smartCleanup) smartCleanup();
+  let gesture = null, frame = 0, holdTimer = 0;
+  const badge = el('holdBadge');
+  function hideBadge() { if (badge) { badge.classList.remove('show'); } }
+  function showBadge(x, y, text) {
+    if (!badge) return;
+    badge.style.left = x + 'px'; badge.style.top = y + 'px';
+    badge.textContent = text; badge.classList.add('show');
+  }
+  function reset() {
+    gesture = null;
+    if (frame) cancelAnimationFrame(frame);
+    if (holdTimer) clearTimeout(holdTimer);
+    frame = 0; holdTimer = 0;
+    hideBadge();
+  }
+  function armHoldTimer(g) {
+    if (holdTimer) clearTimeout(holdTimer);
+    if (g.mode !== 'hold') return;
+    holdTimer = setTimeout(() => {
+      if (gesture === g && !g.released) {
+        g.holdReady = true;
+        showBadge(g.x, g.y, 'Release to snap');
+      }
+    }, SMART_HOLD_MS);
+  }
+  const down = e => {
+    if (!e.isPrimary) return;
     reset();
-    if(smartMode==="off" || !e.isPrimary || e.button!==0 || !e.target.closest?.(".tl-canvas") || !ed.isIn("draw.idle")) return;
-    gesture={pointer:e.pointerId,mode:smartMode,x:e.clientX,y:e.clientY,last:performance.now(),ids:[],page:ed.getCurrentPageId(),zoom:ed.getZoomLevel(),released:false};
+    if (smartMode === 'off' || e.button !== 0 || !e.target.closest?.('.tl-canvas') || !ed.isIn('draw.idle')) return;
+    gesture = {
+      pointer: e.pointerId, mode: smartMode, x: e.clientX, y: e.clientY,
+      last: performance.now(), ids: [], page: ed.getCurrentPageId(),
+      zoom: ed.getZoomLevel(), released: false, holdReady: false
+    };
+    armHoldTimer(gesture);
   };
-  const move=e=>{
-    if(!gesture || gesture.released || e.pointerId!==gesture.pointer) return;
-    if(Math.hypot(e.clientX-gesture.x,e.clientY-gesture.y)>5){
-      gesture.x=e.clientX; gesture.y=e.clientY; gesture.last=performance.now();
+  const move = e => {
+    if (!gesture || gesture.released || e.pointerId !== gesture.pointer) return;
+    if (Math.hypot(e.clientX - gesture.x, e.clientY - gesture.y) > 5) {
+      gesture.x = e.clientX; gesture.y = e.clientY;
+      gesture.last = performance.now();
+      gesture.holdReady = false;
+      hideBadge();
+      armHoldTimer(gesture);
     }
   };
-  const created=ed.sideEffects.registerAfterCreateHandler("shape",(shape,source)=>{
-    if(gesture && !gesture.released && source==="user" && shape.type==="draw") gesture.ids.push(shape.id);
+  const created = ed.sideEffects.registerAfterCreateHandler('shape', (shape, source) => {
+    if (gesture && !gesture.released && source === 'user' && shape.type === 'draw') gesture.ids.push(shape.id);
   });
-  const up=e=>{
-    const g=gesture;
-    if(!g || e.pointerId!==g.pointer) return;
-    const held=performance.now()-g.last>=SMART_HOLD_MS && Math.hypot(e.clientX-g.x,e.clientY-g.y)<=7;
-    g.released=true;
-    if(g.ids.length!==1 || (g.mode==="hold" && !held)){reset();return;}
-    let attempts=0;
-    function finish(){
-      frame=0;
-      if(gesture!==g || smartMode!==g.mode || ed.getCurrentPageId()!==g.page){reset();return;}
-      const s=ed.getShape(g.ids[0]);
-      if(!s || s.type!=="draw"){reset();return;}
-      if(!s.props.isComplete || !ed.isIn("draw.idle")){
-        if(++attempts<8) frame=requestAnimationFrame(finish); else reset();
+  const up = e => {
+    const g = gesture;
+    if (!g || e.pointerId !== g.pointer) return;
+    if (holdTimer) { clearTimeout(holdTimer); holdTimer = 0; }
+    hideBadge();
+    const held = g.holdReady || (performance.now() - g.last >= SMART_HOLD_MS && Math.hypot(e.clientX - g.x, e.clientY - g.y) <= 7);
+    g.released = true;
+    if (g.ids.length !== 1 || (g.mode === 'hold' && !held)) { reset(); return; }
+    let attempts = 0;
+    function finish() {
+      frame = 0;
+      if (gesture !== g || smartMode !== g.mode || ed.getCurrentPageId() !== g.page) { reset(); return; }
+      const s = ed.getShape(g.ids[0]);
+      if (!s || s.type !== 'draw') { reset(); return; }
+      if (!s.props.isComplete || !ed.isIn('draw.idle')) {
+        if (++attempts < 8) frame = requestAnimationFrame(finish); else reset();
         return;
       }
       reset();
-      if(s.parentId!==g.page || s.rotation!==0) return;
-      const points=s.props.segments.flatMap(seg=>seg.points.map(p=>smartPoint(s.x+p.x,s.y+p.y)));
-      const match=smartRecognize(points,g.zoom);
-      if(match) smartReplace(ed,s,match);
+      if (s.parentId !== g.page || s.rotation !== 0) return;
+      const points = s.props.segments.flatMap(seg => seg.points.map(pt => smartPoint(s.x + pt.x, s.y + pt.y)));
+      const match = smartRecognize(points, g.zoom) || smartCheckTwoStrokeArrow(points, lastSmartLine, g.zoom);
+      if (match) smartReplace(ed, s, match);
+      else lastSmartLine = null;
     }
-    frame=requestAnimationFrame(finish);
+    frame = requestAnimationFrame(finish);
   };
-  const cancel=()=>reset();
-  const listeners={pointerdown:down,pointermove:move,pointerup:up,pointercancel:cancel,blur:cancel};
-  Object.entries(listeners).forEach(([name,fn])=>window.addEventListener(name,fn,true));
-  smartCleanup=()=>{
-    reset(); created(); smartCleanup=null;
-    Object.entries(listeners).forEach(([name,fn])=>window.removeEventListener(name,fn,true));
+  const cancel = () => reset();
+  const listeners = { pointerdown: down, pointermove: move, pointerup: up, pointercancel: cancel, blur: cancel };
+  Object.entries(listeners).forEach(([name, fn]) => window.addEventListener(name, fn, true));
+  smartCleanup = () => {
+    reset(); created(); smartCleanup = null;
+    Object.entries(listeners).forEach(([name, fn]) => window.removeEventListener(name, fn, true));
   };
   return smartCleanup;
 }
-function SmartShapesButton(){
-  const [mode,setMode]=React.useState(smartMode);
-  return React.createElement("button",{
-    type:"button",className:"tlui-button",title:"Smart Shapes: click to cycle Hold / Auto / Off",
-    "aria-label":"Smart Shapes: "+mode, style:{padding:"0 8px",whiteSpace:"nowrap",fontWeight:mode==="off"?400:600},
-    onClick:()=>{smartMode=({hold:"auto",auto:"off",off:"hold"})[mode];setMode(smartMode);toast("Smart Shapes: "+smartMode);}
-  },"Shapes: "+({hold:"Hold",auto:"Auto",off:"Off"})[mode]);
+
+const uiSync = { setSmart: null, setGrid: null, setPen: null };
+function cycleSmartMode() {
+  smartMode = ({ hold: 'auto', auto: 'off', off: 'hold' })[smartMode];
+  prefs.smartMode = smartMode; savePrefs();
+  uiSync.setSmart?.(smartMode);
+  toast('Smart Shapes: ' + smartMode);
 }
-// END OrgDraw Smart Shapes extension
+function toggleGridMode() {
+  prefs.gridMode = !prefs.gridMode; savePrefs();
+  try { editor?.updateInstanceState({ isGridMode: prefs.gridMode }); } catch {}
+  uiSync.setGrid?.(prefs.gridMode);
+  toast(prefs.gridMode ? 'Grid: On' : 'Grid: Off');
+}
+function togglePenMode() {
+  prefs.penMode = !prefs.penMode; savePrefs();
+  try { editor?.updateInstanceState({ isPenMode: prefs.penMode }); } catch {}
+  uiSync.setPen?.(prefs.penMode);
+  toast(prefs.penMode ? 'Pen-only: On (palm rejection)' : 'Pen-only: Off');
+}
+function toggleStylePanel() {
+  prefs.hideStyle = !el('tldraw').classList.toggle('orgdraw-hide-style');
+  prefs.hideStyle = el('tldraw').classList.contains('orgdraw-hide-style');
+  savePrefs();
+}
+
+function SmartShapesButton() {
+  const [mode, setMode] = React.useState(smartMode);
+  React.useEffect(() => { uiSync.setSmart = setMode; return () => { uiSync.setSmart = null; }; }, []);
+  return React.createElement('button', {
+    type: 'button', className: 'tlui-button', title: 'Smart Shapes (Shift+S): Hold / Auto / Off',
+    'aria-label': 'Smart Shapes: ' + mode, style: { fontWeight: mode === 'off' ? 400 : 600 },
+    onClick: cycleSmartMode
+  }, 'Shapes: ' + ({ hold: 'Hold', auto: 'Auto', off: 'Off' })[mode]);
+}
+function GridButton() {
+  const [on, setOn] = React.useState(prefs.gridMode);
+  React.useEffect(() => { uiSync.setGrid = setOn; return () => { uiSync.setGrid = null; }; }, []);
+  return React.createElement('button', {
+    type: 'button', className: 'tlui-button', title: 'Toggle alignment grid (Shift+G)',
+    'aria-pressed': String(on), onClick: toggleGridMode
+  }, 'Grid');
+}
+function PenButton() {
+  const [on, setOn] = React.useState(prefs.penMode);
+  React.useEffect(() => { uiSync.setPen = setOn; return () => { uiSync.setPen = null; }; }, []);
+  return React.createElement('button', {
+    type: 'button', className: 'tlui-button', title: 'Pen-only palm rejection (Shift+P)',
+    'aria-pressed': String(on), onClick: togglePenMode
+  }, 'Pen');
+}
+// END OrgDraw Smart Shapes & Canvas UX extension
 
 function onEditorMount(ed){
- editor=ed;try{ed.user.updateUserPreferences({colorScheme:theme});ed.setCurrentTool('draw');}catch{}
+ editor=ed;
+ try{
+   ed.user.updateUserPreferences({colorScheme:theme});
+   ed.updateInstanceState({isGridMode:prefs.gridMode,isPenMode:prefs.penMode});
+   ed.setCurrentTool('draw');
+ }catch{}
+ if(prefs.hideStyle)el('tldraw').classList.add('orgdraw-hide-style');
  if(pending!==undefined){applyDrawing(pending);pending=undefined;}
  ready.splice(0).forEach(resolve=>resolve(ed));
  const cleanup=installSmartShapes(ed);
@@ -250,7 +595,7 @@ async function exportResult(){
   }png=bytesToB64(new Uint8Array(await blob.arrayBuffer()));
  }return {png,drawing,shapes:ids.length};
 }
-function OrgDrawShare(){const h=React.createElement;return h('div',{className:'orgdraw-share'},h(SmartShapesButton),h('button',{id:'btnStyle',className:'tlui-button',title:'Toggle style panel',onClick:()=>el('tldraw').classList.toggle('orgdraw-hide-style')},'Style'),h('button',{id:'btnCancel',className:'tlui-button',onClick:cancel},'Cancel'),h('button',{id:'btnDone',className:'tlui-button tlui-button__primary',onClick:done},'Done'));}
+function OrgDrawShare(){const h=React.createElement;return h('div',{className:'orgdraw-share'},h(SmartShapesButton),h(GridButton),h(PenButton),h('button',{id:'btnStyle',className:'tlui-button',title:'Toggle style panel',onClick:toggleStylePanel},'Style'),h('button',{id:'btnCancel',className:'tlui-button',onClick:cancel},'Cancel'),h('button',{id:'btnDone',className:'tlui-button tlui-button__primary',title:'Send to Emacs (Ctrl/Cmd+Enter)',onClick:done},'Done'));}
 const components={SharePanel:OrgDrawShare,PageMenu:null,Minimap:null,DebugMenu:null,DebugPanel:null};
 createRoot(el('tldraw')).render(React.createElement(Tldraw,{onMount:onEditorMount,inferDarkMode:false,licenseKey:raw.tldraw_license||window.ORGDRAW_TLDRAW_LICENSE||undefined,components}));
 function auth(json=false){const h={};if(CONFIG.token)h[CONFIG.token_header]=CONFIG.token;if(json)h['Content-Type']='application/json';return h;}
@@ -273,6 +618,16 @@ let busy=false;
 async function done(){if(busy)return;busy=true;const button=el('btnDone');if(button)button.disabled=true;try{status('exporting');const out=await exportResult();if(!out.shapes){toast('Draw something first');return;}if(DEMO){const a=document.createElement('a');a.href='data:image/png;base64,'+out.png;a.download='orgdraw-figure.png';a.click();status('saved');return;}if(!CONFIG.session_id){toast('No active session');return;}const response=await fetch(CONFIG.result_path,{method:'POST',headers:auth(true),body:JSON.stringify({session_id:CONFIG.session_id,png:out.png,drawing:bytesToB64(new TextEncoder().encode(out.drawing)),format:'web'})});if(response.ok){toast('Sent to Emacs');onSessionFinished();}else if(response.status===401)rejected();else toast('Upload failed: '+response.status);}catch(e){console.error(e);toast('Export or upload failed');}finally{busy=false;if(button)button.disabled=false;}}
 async function cancel(){if(DEMO){clearCanvas();return;}if(!CONFIG.session_id)return;try{await fetch(CONFIG.cancel_path,{method:'POST',headers:auth(true),body:JSON.stringify({session_id:CONFIG.session_id})});}catch{toast('Cancel request failed');}onSessionFinished();}
 el('btnPair').onclick=submitPair;el('pairCode').onkeydown=e=>{if(e.key==='Enter')submitPair();};el('btnUnpair').onclick=()=>{saveToken(null);CONFIG.token=null;enterPairing();};
+window.addEventListener('keydown',e=>{
+ if(e.target?.closest?.('input,textarea,[contenteditable="true"]'))return;
+ if((e.metaKey||e.ctrlKey)&&e.key==='Enter'){e.preventDefault();done();return;}
+ if(!e.metaKey&&!e.ctrlKey&&!e.altKey&&e.shiftKey){
+  const k=e.key.toLowerCase();
+  if(k==='s'){e.preventDefault();cycleSmartMode();}
+  else if(k==='g'){e.preventDefault();toggleGridMode();}
+  else if(k==='p'){e.preventDefault();togglePenMode();}
+ }
+});
 if(CONFIG.screen==='drawing'){if(CONFIG.mode==='edit'&&CONFIG.drawing){try{applyDrawing(decode(CONFIG.drawing));}catch{}}status(DEMO?'demo':'drawing');showScreen(null);}else if(CONFIG.screen==='waiting')enterWaiting();else enterPairing();
 window.__orgdraw={get editor(){return editor;},CONFIG,exportResult,enterDrawingForSession,onSessionFinished,whenEditorReady};
 </script>
