@@ -16,8 +16,8 @@
 
 (use-package autoinsert
   :ensure nil
-  :init
-  (auto-insert-mode 1)
+  :defer t
+  :hook (find-file . auto-insert)
   :config
   (setq auto-insert-query nil)
   (defun my/title-from-file-name (file-name)
@@ -60,14 +60,21 @@
          "(provide '" feature-name ")\n"
          ";;; " file-name " ends here\n")))))
 
-(use-package ace-window)
+(use-package ace-window
+  :defer t
+  :commands (ace-window))
 
 ;; formatter
 (add-hook 'before-save-hook #'delete-trailing-whitespace)
 (use-package apheleia
   :ensure t
+  :defer t
   :init
-  (add-hook 'after-init-hook #'apheleia-global-mode)
+  (defun my/enable-apheleia-once ()
+    "Enable `apheleia-global-mode' when the first file is opened."
+    (remove-hook 'find-file-hook #'my/enable-apheleia-once)
+    (apheleia-global-mode 1))
+  (add-hook 'find-file-hook #'my/enable-apheleia-once)
   :config
   (setf (alist-get 'clang-format apheleia-formatters)
         '("clang-format" "--style={BasedOnStyle: LLVM, IndentWidth: 4, TabWidth: 4, UseTab: Never}"))
@@ -87,14 +94,15 @@
 
 (use-package centaur-tabs
   :ensure t
-  :demand t
+  :defer t
+  :init
+  (run-with-idle-timer 0.05 nil (lambda () (centaur-tabs-mode 1)))
   :config
   (setq centaur-tabs-style "bar"
         centaur-tabs-height 32
         centaur-tabs-set-icons t
         centaur-tabs-set-modified-marker t
         centaur-tabs-show-navigation-buttons t)
-  (centaur-tabs-mode t)
   :hook
   (dired-sidebar-mode . centaur-tabs-local-mode)
   :bind

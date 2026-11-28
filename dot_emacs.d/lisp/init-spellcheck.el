@@ -7,24 +7,33 @@
   "returns the first dictionary file"
   (seq-find #'file-readable-p files))
 
-;; TODO: Add here Windows dir
-(defvar custom/en-wordlist
-  (find-first-custom-dir
-   "/usr/share/dict/american-english"
-   "/usr/share/dict/usa"
-   "~/.local/share/dict/en_US.words" ;; this should be for Windows
-   "/usr/share/dict/words"
-   "/usr/dict/words"))
+(defvar custom/en-wordlist nil)
+(defvar custom/de-wordlist nil)
 
-(defvar custom/de-wordlist
-  (find-first-custom-dir
-   "/usr/share/dict/ngerman"
-   "/usr/share/dict/german"
-   "/usr/share/dict/de_DE"
-   "~/.local/share/dict/de_DE.words" ;; this should be for Windows
-   "/usr/share/dict/words"))
+(defun custom/get-en-wordlist ()
+  "Lazily resolve and cache the English wordlist path."
+  (or custom/en-wordlist
+      (setq custom/en-wordlist
+            (find-first-custom-dir
+             "/usr/share/dict/american-english"
+             "/usr/share/dict/usa"
+             "~/.local/share/dict/en_US.words" ;; this should be for Windows
+             "/usr/share/dict/words"
+             "/usr/dict/words"))))
 
-(setq-default cape-dict-file custom/en-wordlist)
+(defun custom/get-de-wordlist ()
+  "Lazily resolve and cache the German wordlist path."
+  (or custom/de-wordlist
+      (setq custom/de-wordlist
+            (find-first-custom-dir
+             "/usr/share/dict/ngerman"
+             "/usr/share/dict/german"
+             "/usr/share/dict/de_DE"
+             "~/.local/share/dict/de_DE.words" ;; this should be for Windows
+             "/usr/share/dict/words"))))
+
+(with-eval-after-load 'cape-dict
+  (setq-default cape-dict-file (custom/get-en-wordlist)))
 
 ;; NOTE: Jinx uses hunspell backend.
 ;; It has nothing to do with the
@@ -33,7 +42,7 @@
 (defun switch-eng ()
   "Switch spell checking and completion to English."
   (interactive)
-  (setq-local ispell-complete-word-dict custom/en-wordlist)
+  (setq-local ispell-complete-word-dict (custom/get-en-wordlist))
   (jinx-languages "en_US")
   (message "Welcome"))
 
@@ -41,7 +50,7 @@
 (defun switch-ger ()
   "Switch spell checking and completion to German."
   (interactive)
-  (setq-local ispell-complete-word-dict custom/de-wordlist)
+  (setq-local ispell-complete-word-dict (custom/get-de-wordlist))
   (jinx-languages "de_DE")
   (message "Willkommen"))
 

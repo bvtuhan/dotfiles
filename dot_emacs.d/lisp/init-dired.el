@@ -27,6 +27,7 @@
 
 (use-package dired-aux
   :ensure nil
+  :after dired
   :custom
   (dired-vc-rename-file t))
 
@@ -65,6 +66,7 @@
   :hook (dired-mode . diredfl-mode))
 
 (use-package nerd-icons
+  :defer t
   :config
   (unless (display-graphic-p)
     (setq nerd-icons-color-icons nil)))
@@ -72,6 +74,11 @@
 ;; please rm -rf ~/.emacs.d/elpa/dirvish first
 ;; main upstream is back
 (use-package dirvish
+  :defer t
+  :commands (dirvish dirvish-dwim dirvish-side dirvish-fd)
+  :init
+  (with-eval-after-load 'dired
+    (dirvish-override-dired-mode))
   :custom
   (dirvish-cache-dir (expand-file-name "dirvish/" user-emacs-directory))
   (dirvish-reuse-session 'open)
@@ -80,7 +87,6 @@
   (dirvish-hide-details '(dirvish dirvish-side))
   (dirvish-hide-cursor '(dirvish dirvish-side))
   :config
-  (dirvish-override-dired-mode)
   (general-define-key
    :states '(normal visual)
    :keymaps 'dirvish-mode-map

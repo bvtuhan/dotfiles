@@ -19,7 +19,10 @@
       scroll-bar-mode nil
       tooltip-mode nil)
 (setq frame-inhibit-implied-resize t
-      frame-resize-pixelwise t)
+      frame-resize-pixelwise t
+      site-run-file nil
+      inhibit-default-init t
+      read-process-output-max (* 4 1024 1024))
 (setq package-enable-at-startup nil)
 (setq evil-want-integration t
       evil-want-keybinding nil

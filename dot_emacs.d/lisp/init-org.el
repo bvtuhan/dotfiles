@@ -154,11 +154,10 @@
 (use-package org-eldoc
   :ensure org-contrib
   :after org
-  :hook (org-mode . org-eldoc-load)
+  :hook ((org-mode . org-eldoc-load)
+         (org-mode . eldoc-mode))
   :init
-  (setq org-eldoc-breadcrumb-separator " → ")
-  :config
-  (add-hook 'org-mode-hook #'eldoc-mode))
+  (setq org-eldoc-breadcrumb-separator " → "))
 
 (use-package evil-org
   :after org

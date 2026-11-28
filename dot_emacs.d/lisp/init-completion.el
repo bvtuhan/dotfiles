@@ -34,14 +34,27 @@
 
 (use-package yasnippet
   :defer t
-  :hook ((prog-mode text-mode conf-mode) . yas-minor-mode))
+  :init
+  (defun my/yas-minor-mode-if-file ()
+    "Enable `yas-minor-mode' in programming or file-visiting buffers."
+    (when (or buffer-file-name (derived-mode-p 'prog-mode))
+      (yas-minor-mode 1)))
+  (dolist (hook '(prog-mode-hook text-mode-hook conf-mode-hook))
+    (add-hook hook #'my/yas-minor-mode-if-file)))
 
 (use-package yasnippet-snippets
   :after yasnippet)
 
 (use-package vertico
+  :defer t
   :init
-  (vertico-mode 1)
+  (defun my/enable-vertico-once ()
+    "Enable `vertico-mode' on first minibuffer invocation."
+    (remove-hook 'minibuffer-setup-hook #'my/enable-vertico-once)
+    (vertico-mode 1)
+    (when (fboundp 'vertico--exhibit)
+      (vertico--setup)))
+  (add-hook 'minibuffer-setup-hook #'my/enable-vertico-once -90)
   :bind
   (:map vertico-map
         ("C-j" . vertico-next)
@@ -59,18 +72,21 @@
 
 (use-package savehist
   :ensure nil
+  :defer t
   :init
-  (savehist-mode 1))
+  (run-with-idle-timer 0.3 nil (lambda () (savehist-mode 1))))
 
 (use-package marginalia
   :ensure t
-  :config
-  (marginalia-mode))
+  :defer t
+  :hook (vertico-mode . marginalia-mode))
 
 ;; keybindings are defined in `init-general.el'
-(use-package consult)
+(use-package consult
+  :defer t)
 
 (use-package corfu
+  :defer t
   :custom
   (corfu-cycle t)
   (corfu-auto t)
@@ -81,11 +97,18 @@
   (corfu-preview-current nil)
   (corfu-preselect 'prompt)
   :init
-  (global-corfu-mode 1))
+  (defun my/enable-corfu-once ()
+    "Enable `global-corfu-mode' on first file open or insert."
+    (remove-hook 'find-file-hook #'my/enable-corfu-once)
+    (remove-hook 'evil-insert-state-entry-hook #'my/enable-corfu-once)
+    (global-corfu-mode 1))
+  (add-hook 'find-file-hook #'my/enable-corfu-once)
+  (add-hook 'evil-insert-state-entry-hook #'my/enable-corfu-once))
 
 ;; supress the look message log
 (use-package ispell
   :ensure nil
+  :defer t
   :config
   (advice-add
    #'ispell-lookup-words
@@ -101,9 +124,7 @@
   :hook (corfu-mode . corfu-popupinfo-mode)
   :custom
   (corfu-popupinfo-delay '(0.25 . 0.1))
-  (corfu-popupinfo-hide nil)
-  :config
-  (corfu-popupinfo-mode))
+  (corfu-popupinfo-hide nil))
 
 (use-package corfu-terminal
   :if (and (not (display-graphic-p)) (version< emacs-version "31"))

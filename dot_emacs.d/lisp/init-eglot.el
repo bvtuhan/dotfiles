@@ -22,10 +22,11 @@
 
   :custom
   (eglot-autoshutdown nil)
+  (eglot-sync-connect nil)
+  (eglot-events-buffer-config '(:size 0 :format full))
   (eglot-send-changes-idle-time 0.1)
   (eglot-extend-to-xref t)
   (eglot-confirm-server-edits nil)
-  (eglot-inlay-hints-mode 1)
 
   :config
   (fset #'jsonrpc--log-event #'ignore)

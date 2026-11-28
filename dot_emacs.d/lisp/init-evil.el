@@ -16,6 +16,7 @@
         evil-respect-visual-line-mode t
         evil-shift-width tab-width)
   :config
+  (setq hl-line-sticky-flag nil)
   (global-hl-line-mode 1)
   (setq-default evil-cross-lines t)
   (advice-add 'evil-window-vsplit :override (lambda (&rest r) (split-window (selected-window) nil 'right)))
@@ -30,25 +31,29 @@
 
 (use-package evil-goggles
   :after evil
+  :defer t
   :init
-  (setq evil-goggles-duration 0.1)
-  (setq evil-goggles-enable-change nil)
-  (setq evil-goggles-enable-delete nil)
-  :config
-  (evil-goggles-mode))
+  (setq evil-goggles-duration 0.1
+        evil-goggles-enable-change nil
+        evil-goggles-enable-delete nil)
+  (run-with-idle-timer 0.2 nil (lambda () (evil-goggles-mode 1))))
 
 ;; undo-fu/vundo stack
 (use-package undo-fu
   :after evil
+  :defer t
   :config
   (setq undo-limit 67108864 ;; 64mb.
         undo-strong-limit 100663296 ;; 96mb.
         undo-outer-limit 1006632960)) ;; 960mb.
 
 (use-package undo-fu-session
-  :after undo-fu
+  :defer t
   :init
-  (undo-fu-session-global-mode)
+  (defun my/enable-undo-fu-session-once ()
+    (remove-hook 'find-file-hook #'my/enable-undo-fu-session-once)
+    (undo-fu-session-global-mode 1))
+  (add-hook 'find-file-hook #'my/enable-undo-fu-session-once)
   :config
   (setq undo-fu-session-incompatible-files '("/COMMIT_EDITMSG\\'" "/git-rebase-todo\\'")))
 
